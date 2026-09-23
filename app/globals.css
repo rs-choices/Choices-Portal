@@ -2,3 +2,6 @@
 
 /* The whole design system. Delete theme/ and nothing else defines a token. */
 @import "../theme/index.css";
+
+/* Portal-only tokens the theme does not define yet. */
+@import "../styles/portal.css";

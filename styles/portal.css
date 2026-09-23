@@ -1,0 +1,87 @@
+/* Portal-only tokens.
+   The Business Portal design uses a wider neutral scale, a few darker text
+   shades of peach and teal, and overlay shadows that the shared Choices theme
+   in theme/ does not define yet. They live here, outside theme/, so the theme
+   folder stays an unchanged copy of the design system. Move any of these into
+   theme/tokens/theme.css once the design system adopts them. */
+
+@theme {
+  /* --- surfaces --- */
+  --color-page: #f8f7fa;
+  --color-fill-soft: #f4f3f7;
+  --color-fill-hover: #e9e7f0;
+  --color-fill-faint: #faf9fc;
+  --color-fill-row: #f1eff6;
+  --color-peach-wash: #fdedea;
+  --color-scrim: rgb(20, 8, 55);
+
+  /* --- text --- */
+  --color-fg: #1a1530;
+  --color-fg-strong: #2b2640;
+  --color-fg-soft: #4f4a66;
+  --color-fg-muted: #6b6680;
+  --color-fg-subtle: #9a97a6;
+  --color-fg-grey: #6b6b6b;
+
+  /* --- lines --- */
+  --color-line-soft: #f1f0f4;
+  --color-line-faint: #f6f5f8;
+  --color-line-strong: #dad8e0;
+  --color-line-dashed: #c9c5d6;
+
+  /* --- status text --- */
+  --color-peach-ink: #a63a26;
+  --color-peach-deep: #8c2f1e;
+  --color-danger: #b8432f;
+  --color-teal-ink: rgb(0, 115, 107);
+  --color-teal-ink-bright: rgb(0, 125, 117);
+  --color-amber: #e0a13b;
+  --color-lilac: #8a6fd1;
+  --color-muted-lilac: #b9b5c7;
+
+  /* --- elevation --- */
+  --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-segment: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-popover: 0 12px 32px rgba(20, 8, 55, 0.18);
+  --shadow-dialog: 0 20px 48px rgba(20, 8, 55, 0.28);
+  --shadow-lock: 0 20px 48px rgba(20, 8, 55, 0.2);
+  --shadow-modal: 0 24px 64px rgba(20, 8, 55, 0.3);
+  --shadow-toast: 0 8px 24px rgba(46, 19, 116, 0.3);
+  --shadow-tour-ring: 0 0 0 3px var(--peach-2), 0 0 0 9px rgba(244, 114, 97, 0.25);
+  --shadow-phone-frame: 0 0 0 8px #1a1530, 0 20px 40px rgba(20, 8, 55, 0.2);
+  --shadow-live-dot: 0 0 0 4px rgba(244, 114, 97, 0.2);
+
+  /* --- type ---
+     The design sets text on the browser's default line height rather than
+     Tailwind's per-size leading, so the size utilities do the same. */
+  --text-xs--line-height: normal;
+  --text-sm--line-height: normal;
+  --text-base--line-height: normal;
+  --text-lg--line-height: normal;
+  --text-xl--line-height: normal;
+
+  --animate-pulse-soft: pulse-soft 1.4s ease-in-out infinite;
+
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+}
+
+@layer base {
+  html {
+    line-height: normal;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+  }
+}
