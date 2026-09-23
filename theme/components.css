@@ -1,0 +1,142 @@
+/* Design-system components that are worth a class rather than a utility run:
+   the button, the icon primitives and the base element defaults. Everything
+   else on the site is plain Tailwind utilities in the JSX. */
+
+@layer base {
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-brand-peach);
+    color: var(--color-inverse);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-purple);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  /* Button — web port of the design system Button component.
+     Variants map to the Figma `property1` values. */
+  .ds-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding-inline: 1.5rem;
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--color-cta);
+    color: var(--color-cta-ink);
+    font-family: var(--font-button);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease,
+      border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ds-button:hover {
+    background: var(--color-brand-peach-hover);
+    color: var(--color-cta-ink);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(244, 114, 97, 0.35);
+  }
+
+  .ds-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .ds-button-outline {
+    background: transparent;
+    border-color: var(--color-brand-purple);
+    color: var(--color-brand-purple);
+  }
+
+  .ds-button-outline:hover {
+    background: var(--color-brand-purple);
+    border-color: var(--color-brand-purple);
+    color: var(--color-inverse);
+    box-shadow: 0 10px 24px rgba(46, 19, 116, 0.25);
+  }
+
+  .ds-button-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-brand-purple);
+  }
+
+  .ds-button-ghost:hover {
+    background: var(--color-surface-purple);
+    box-shadow: none;
+  }
+
+  .ds-button-sm {
+    min-height: 40px;
+    padding-inline: 1rem;
+    font-size: 14px;
+  }
+
+  .ds-button-block {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* Icon — stroke-based, coloured by the surrounding text colour. */
+  .ds-icon {
+    width: var(--icon-size, 24px);
+    height: var(--icon-size, 24px);
+    flex-shrink: 0;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ds-icon-sm { --icon-size: 18px; }
+  .ds-icon-md { --icon-size: 24px; }
+  .ds-icon-lg { --icon-size: 28px; }
+
+  /* Circular and square icon wells used on cards and feature tiles. */
+  .ds-icon-well {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-surface-purple);
+    color: var(--color-brand-purple);
+  }
+
+  .ds-icon-well-square {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-lg);
+    background: var(--color-brand-purple);
+    color: var(--color-brand-peach);
+  }
+
+  .ds-icon-well-peach {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: var(--color-brand-peach);
+    color: var(--color-inverse);
+    box-shadow: 0 10px 24px rgba(244, 114, 97, 0.35);
+  }
+}

@@ -1,0 +1,9 @@
+/* Choices theme — single entry point.
+   app/globals.css imports this one file after Tailwind, and the whole design
+   system comes with it. Delete the theme/ folder and nothing else in the
+   project defines a design-system value. */
+
+/* Webfonts are loaded from ./fonts.ts (next/font), wired up in app/layout.tsx. */
+@import './tokens/fig-tokens.css';
+@import './tokens/theme.css';
+@import './components.css';

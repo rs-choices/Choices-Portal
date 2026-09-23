@@ -1,0 +1,68 @@
+/* Raw Figma variables from the Choices Design System.
+   These are the literal source values. Write new work against the semantic
+   tokens in ./theme.css instead — they alias these. */
+
+:root {
+  /* brand */
+  --primary-purple-500: rgb(46, 19, 116);
+  --primary-purple-opacity-5: rgba(46, 19, 116, 0.05);
+  --primary-purple-opacity-10: rgba(46, 19, 116, 0.1);
+  --primary-purple-opacity-20: rgba(46, 19, 116, 0.2);
+  --primary-purple-opacity-30: rgba(46, 19, 116, 0.3);
+  --primary-purple-opacity-40: rgba(46, 19, 116, 0.4);
+  --primary-purple-opacity-50: rgba(46, 19, 116, 0.5);
+  --primary-purple-variables-50: rgb(196, 189, 216);
+  --primary-purple-variables-100: rgb(180, 170, 205);
+  --primary-purple-variables-200: rgb(146, 132, 183);
+  --primary-purple-variables-300: rgb(113, 95, 160);
+  --primary-purple-variables-400: rgb(79, 57, 138);
+  --primary-purple-variables-600: rgb(39, 16, 97);
+  --primary-purple-variables-700: rgb(31, 13, 79);
+  --primary-purple-variables-800: rgb(24, 10, 60);
+  --primary-purple-variables-900: rgb(17, 7, 42);
+
+  --peach-2: rgb(244, 114, 97);
+  --primary-orange-500: rgb(244, 114, 97);
+  --primary-orange-opacity-5: rgba(244, 114, 97, 0.05);
+  --primary-orange-opacity-10: rgba(244, 114, 97, 0.1);
+  --primary-orange-opacity-20: rgba(244, 114, 97, 0.2);
+  --primary-orange-opacity-30: rgba(244, 114, 97, 0.3);
+  --primary-orange-variable-50: rgb(252, 216, 211);
+  --primary-orange-variable-100: rgb(251, 204, 198);
+  --primary-orange-variable-200: rgb(249, 182, 173);
+  --primary-orange-variable-300: rgb(248, 159, 148);
+  --primary-orange-variable-400: rgb(246, 137, 122);
+  --primary-orange-variable-600: rgb(205, 96, 81);
+  --primary-orange-variable-700: rgb(166, 78, 66);
+  --primary-orange-variable-800: rgb(127, 59, 50);
+  --primary-orange-variable-900: rgb(88, 41, 35);
+
+  --primary-peach-500: rgb(241, 165, 166);
+  --primary-dark-green-500: rgb(36, 61, 67);
+
+  /* category colours */
+  --f-b-red-500: rgb(191, 13, 62);
+  --f-b-teal-500: rgb(0, 164, 153);
+  --f-b-violet-500: rgb(112, 27, 117);
+  --events-magenta-500: rgb(132, 5, 68);
+  --events-red-500: rgb(224, 60, 49);
+  --events-yellow-500: rgb(246, 179, 0);
+  --activities-beige-500: rgb(254, 229, 195);
+  --activities-blue-500: rgb(0, 156, 222);
+  --activities-green-500: rgb(32, 166, 75);
+  --activities-kaaki-500: rgb(133, 117, 80);
+
+  /* status */
+  --success-500: rgb(21, 176, 151);
+  --warning-500: rgb(237, 161, 69);
+  --error-500: rgb(192, 55, 68);
+
+  /* neutrals */
+  --pure-black-500: rgb(0, 0, 0);
+  --pure-white-500: rgb(255, 255, 255);
+  --black-variations-200: rgb(122, 122, 122);
+  --black-variations-300: rgb(99, 99, 101);
+  --neutral-variation-100: rgb(204, 204, 204);
+  --separators-vibrant: rgb(230, 230, 230);
+  --white-1000: rgb(255, 255, 255);
+}
