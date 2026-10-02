@@ -62,6 +62,7 @@ These prices come from the portal design and are provisional.
 | [client-app.md](client-app.md) | Every feature of the client mobile app, as designed in Figma |
 | [business-portal.md](business-portal.md) | Every feature of the business owner portal and its rules |
 | [shared-model.md](shared-model.md) | The records both sides share and how actions on one side affect the other |
+| [erd.md](erd.md) | The database tables, their fields, relationships and rules, in plain language |
 | [suggestions.md](suggestions.md) | Ideas that are **not** in the current designs, kept separate |
 
 Sources: the client app Figma export (`Choices.pdf`, 122 screens) and the
