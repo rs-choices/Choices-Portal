@@ -30,5 +30,4 @@ export const ACTION_TOAST: Partial<Record<SectionId, string>> = {
   profile: 'Profile saved. Changes are live in the app.',
   billing: 'Invoice INV-2026-09 downloaded',
   settings: 'Settings saved',
-  help: 'A support agent will reply by email within a few hours',
 };

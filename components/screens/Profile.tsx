@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { useMessages } from '@/components/portal/MessagesProvider';
 import { Button } from '@/components/ui/Button';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { TagChip } from '@/components/ui/Chip';
@@ -10,6 +11,7 @@ import { Icon, PIN, Star } from '@/components/ui/Icon';
 import { PhoneFrame, StatusBar } from '@/components/ui/PhoneFrame';
 import { Segmented } from '@/components/ui/Segmented';
 import { HOURS, IMG, TAGS, VENUE } from '@/lib/portal/data';
+import { LOCKED_REASON } from '@/lib/portal/messages';
 
 const PRICES = [
   [0, 'Under AED 50'],
@@ -20,6 +22,7 @@ const PRICES = [
 const DESCRIPTION = 'A neighbourhood café on Jumeirah Beach Road. Specialty coffee, all-day breakfast and a terrace that catches the sunset.';
 
 export function Profile() {
+  const { suspended } = useMessages();
   const [price, setPrice] = useState<0 | 1 | 2>(1);
   const [tags, setTags] = useState<Record<string, boolean>>({ 'Outdoor seating': true, 'Free Wi-Fi': true, 'Laptop friendly': true, 'Family friendly': true });
 
@@ -92,7 +95,7 @@ export function Profile() {
                 </span>
               </div>
             ))}
-            <Button variant="secondary" size="sm" className="mt-2 self-start">
+            <Button variant="secondary" size="sm" className="mt-2 self-start" disabled={suspended} title={suspended ? LOCKED_REASON : undefined}>
               Edit hours
             </Button>
           </Card>

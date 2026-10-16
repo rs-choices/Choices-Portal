@@ -26,7 +26,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export function Button({ variant = 'primary', size = 'md', className = '', type = 'button', ...rest }: Props) {
-  return <button type={type} className={`${VARIANTS[variant]} ${SIZES[size]} font-bold ${className}`} {...rest} />;
+  return <button type={type} className={`${VARIANTS[variant]} ${SIZES[size]} font-bold disabled:cursor-not-allowed disabled:opacity-45 ${className}`} {...rest} />;
 }
 
 // Text-only link button, peach by default.
