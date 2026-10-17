@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
-import { LOCATIONS, USER, VENUE } from '@/lib/portal/data';
+import { USER, VENUE } from '@/lib/portal/data';
 import { SECTIONS, sectionHref } from '@/lib/portal/sections';
+import { useListings } from './ListingsProvider';
 import { usePortal } from './PortalProvider';
 
 // Three layouts, switched by breakpoint:
@@ -16,7 +17,8 @@ import { usePortal } from './PortalProvider';
 // `hidden lg:… xl:…` pairs below hide the labels in the icon rail only.
 export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: () => void; highlight: boolean }) {
   const pathname = usePathname();
-  const { plan, bookings, location, setLocation, showToast } = usePortal();
+  const { plan, bookings } = usePortal();
+  const { branches } = useListings();
   const [userOpen, setUserOpen] = useState(false);
   const pending = bookings.filter((b) => b.status === 'requested').length;
 
@@ -78,7 +80,7 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
         <div className="relative border-t border-border-subtle p-3">
           <div className="mb-2.5 flex flex-col gap-1 rounded-lg bg-page px-3.5 py-3 lg:hidden xl:flex">
             <div className="text-sm font-bold text-brand-purple">{VENUE}</div>
-            <div className="text-xs text-ink-muted">{LOCATIONS[location]}, Dubai</div>
+            <div className="text-xs text-ink-muted">{branches.length === 1 ? '1 branch' : `${branches.length} branches`} · Dubai</div>
             <div className="mt-1.5 flex items-center justify-between">
               <span className="rounded-pill bg-brand-peach/14 px-2.5 py-1 text-xs font-bold text-peach-ink">{plan} plan</span>
               {plan === 'Starter' && (
@@ -104,27 +106,6 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
 
           {userOpen && (
             <div className="absolute bottom-[72px] left-3 z-60 flex w-[236px] flex-col gap-0.5 rounded-lg bg-surface p-2 shadow-popover">
-              {plan === 'Enterprise' && (
-                <>
-                  <div className="px-2.5 pt-2 pb-1 text-[11px] font-bold tracking-[0.06em] text-fg-subtle">LOCATIONS</div>
-                  {LOCATIONS.map((l, i) => (
-                    <button
-                      key={l}
-                      type="button"
-                      onClick={() => {
-                        setLocation(i);
-                        setUserOpen(false);
-                        showToast(`Switched to ${VENUE} · ${l}`);
-                      }}
-                      className="flex cursor-pointer items-center gap-2.5 rounded-[10px] border-none bg-transparent p-2.5 text-left text-[13px] text-fg hover:bg-fill-soft"
-                    >
-                      <span className={`size-2 rounded-full ${i === location ? 'bg-brand-peach' : 'bg-line-strong'}`} />
-                      {VENUE} · {l}
-                    </button>
-                  ))}
-                  <div className="my-1 h-px bg-surface-muted" />
-                </>
-              )}
               {[
                 ['/settings', 'Account settings', 'text-fg'],
                 ['/help', 'Help & support', 'text-fg'],

@@ -23,14 +23,14 @@ export function Dashboard() {
   const d = SERIES[range];
 
   const items = [
-    { key: 'profile', label: 'Complete your profile', sub: 'Add a description and opening hours', go: () => router.push('/profile') },
+    { key: 'profile', label: 'Complete your place', sub: 'Add a description and opening hours', go: () => router.push('/branches') },
     {
       key: 'photos',
       label: 'Add photos',
       sub: 'Businesses with 5+ photos get 2× more views',
       go: () => {
         completeChecklist('photos');
-        router.push('/profile');
+        router.push('/branches');
       },
     },
     { key: 'offer', label: 'Post your first offer', sub: 'Offers put you in front of people nearby', go: () => openOfferForm() },

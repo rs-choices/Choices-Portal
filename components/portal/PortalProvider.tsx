@@ -21,8 +21,6 @@ type Checklist = { profile: boolean; photos: boolean; offer: boolean };
 type Ctx = {
   plan: Plan;
   setPlan: (p: Plan) => void;
-  location: number;
-  setLocation: (i: number) => void;
   offers: Offer[];
   updateOffer: (id: number, change: Partial<Offer>, message?: string) => void;
   duplicateOffer: (o: Offer) => void;
@@ -53,12 +51,11 @@ export function usePortal() {
   return ctx;
 }
 
-const NEW_OFFER: OfferDraft = { id: null, title: '', desc: '', deal: '', type: 'Discount', img: 0, sd: TODAY, st: '16:00', ed: '2026-09-30', et: '19:00', red: 100 };
+const NEW_OFFER: OfferDraft = { id: null, outletId: '', title: '', desc: '', deal: '', type: 'Discount', img: 0, sd: TODAY, st: '16:00', ed: '2026-09-30', et: '19:00', red: 100 };
 
 export function PortalProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [plan, setPlan] = useState<Plan>('Starter');
-  const [location, setLocation] = useState(0);
   const [offers, setOffers] = useState(OFFERS);
   const [offerTab, setOfferTab] = useState<OfferTab>('active');
   const [bookings, setBookings] = useState(BOOKINGS);
@@ -84,12 +81,12 @@ export function PortalProvider({ children }: { children: ReactNode }) {
 
   const saveOfferForm = (asDraft: boolean) => {
     const f = form;
-    if (!f || !f.title.trim()) return false;
+    if (!f || !f.outletId || !f.title.trim()) return false;
     const status: Exclude<OfferTab, 'expired'> = asDraft ? 'draft' : f.sd > TODAY ? 'scheduled' : 'active';
     const saved = {
       ...f,
       status,
-      window: (f.type === 'Event' ? fmtDate(f.sd) : 'Daily') + ' · ' + fmtTime(f.st) + '–' + fmtTime(f.et),
+      window: 'Daily · ' + fmtTime(f.st) + '–' + fmtTime(f.et),
       dates: status === 'scheduled' ? 'Starts ' + fmtDate(f.sd) : status === 'draft' ? 'Not scheduled' : 'Until ' + fmtDate(f.ed),
       deal: f.deal || 'Offer',
       live: false,
@@ -107,8 +104,6 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   const value: Ctx = {
     plan,
     setPlan,
-    location,
-    setLocation,
     offers,
     updateOffer: (id, change, message) => {
       setOffers((all) => all.map((x) => (x.id === id ? { ...x, ...change } : x)));

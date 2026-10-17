@@ -5,10 +5,12 @@ export type Plan = 'Starter' | 'Growth' | 'Enterprise';
 
 export type OfferStatus = 'active' | 'paused' | 'scheduled' | 'draft' | 'expired';
 export type BookingStatus = 'confirmed' | 'requested' | 'checkedin' | 'noshow' | 'cancelled';
-export type OfferType = 'Discount' | 'Set menu' | 'Happy hour' | 'Event';
+export type OfferType = 'Discount' | 'Set menu' | 'Happy hour';
 
 export type Offer = {
   id: number;
+  // The place (outlet) the offer is added to. See lib/portal/places.ts.
+  outletId: string;
   title: string;
   type: OfferType;
   deal: string;
@@ -96,18 +98,16 @@ export const STATUS: Record<OfferStatus | BookingStatus, { label: string; classN
 };
 
 export const OFFERS: Offer[] = [
-  { id: 1, title: 'Spanish latte 2-for-1', type: 'Discount', deal: '2 for 1', desc: 'Bring a friend: two Spanish lattes for the price of one, every morning.', window: 'Daily · 7–11 AM', dates: 'Until 30 Sep', views: 1284, claims: 96, img: 0, status: 'active', live: true, left: '14m left', pct: 6, sd: '2026-09-01', st: '07:00', ed: '2026-09-30', et: '11:00', red: 150 },
-  { id: 2, title: 'Breakfast for two', type: 'Set menu', deal: 'AED 99', desc: 'Shakshuka, labneh, fresh bread, juice and two coffees.', window: 'Daily · 8 AM–12 PM', dates: 'Until 15 Oct', views: 940, claims: 58, img: 1, status: 'active', live: true, left: '1h 14m left', pct: 30, sd: '2026-09-10', st: '08:00', ed: '2026-10-15', et: '12:00', red: 120 },
-  { id: 3, title: 'Work-from-café day pass', type: 'Discount', deal: '20% off', desc: '20% off your whole bill, fast Wi-Fi and a quiet corner.', window: 'Weekdays · 9 AM–6 PM', dates: 'Until 31 Oct', views: 611, claims: 33, img: 4, status: 'active', live: true, left: '7h 14m left', pct: 80, sd: '2026-09-15', st: '09:00', ed: '2026-10-31', et: '18:00', red: 200 },
-  { id: 4, title: 'Sunset terrace set menu', type: 'Set menu', deal: 'AED 145', desc: 'Three courses on the terrace as the sun goes down.', window: 'Daily · 5–8 PM', dates: 'Until 30 Sep', views: 862, claims: 41, img: 0, status: 'active', live: false, sd: '2026-09-05', st: '17:00', ed: '2026-09-30', et: '20:00', red: 80 },
-  { id: 5, title: 'Mocktail happy hour', type: 'Happy hour', deal: '30% off', desc: '30% off all mocktails and iced drinks.', window: 'Daily · 4–7 PM', dates: 'Until 20 Oct', views: 1102, claims: 74, img: 2, status: 'active', live: false, sd: '2026-09-01', st: '16:00', ed: '2026-10-20', et: '19:00', red: 300 },
-  { id: 6, title: 'Acoustic Thursdays', type: 'Event', deal: 'Free entry', desc: 'Live acoustic sets on the terrace every Thursday.', window: 'Thursdays · 8–10 PM', dates: 'Until 26 Nov', views: 488, claims: 22, img: 3, status: 'active', live: false, sd: '2026-09-03', st: '20:00', ed: '2026-11-26', et: '22:00', red: 60 },
-  { id: 7, title: 'Kids eat free', type: 'Discount', deal: 'Kids free', desc: 'One free kids meal with every adult main.', window: 'Sat–Sun · All day', dates: 'Until 31 Dec', views: 730, claims: 29, img: 5, status: 'active', live: false, sd: '2026-09-06', st: '08:00', ed: '2026-12-31', et: '22:00', red: 100 },
-  { id: 8, title: 'Winter hot chocolate bar', type: 'Discount', deal: 'AED 25', desc: 'Build-your-own hot chocolate with toppings.', window: 'Daily · 3–9 PM', dates: 'Starts 15 Oct', views: 0, claims: 0, img: 2, status: 'scheduled', sd: '2026-10-15', st: '15:00', ed: '2026-12-31', et: '21:00', red: 200 },
-  { id: 9, title: 'National Day brunch', type: 'Event', deal: 'AED 195', desc: 'A long brunch with Emirati dishes and live oud.', window: '2 Dec · 11 AM–3 PM', dates: 'Starts 2 Dec', views: 0, claims: 0, img: 1, status: 'scheduled', sd: '2026-12-02', st: '11:00', ed: '2026-12-02', et: '15:00', red: 60 },
-  { id: 10, title: 'Ladies morning', type: 'Discount', deal: '25% off', desc: '25% off breakfast every Tuesday.', window: 'Tuesdays · 8–11 AM', dates: 'Not scheduled', views: 0, claims: 0, img: 4, status: 'draft', sd: '', st: '08:00', ed: '', et: '11:00', red: 50 },
-  { id: 11, title: 'Summer iced coffee 3 for 2', type: 'Discount', deal: '3 for 2', desc: '', window: 'Daily · All day', dates: 'Ended 31 Aug', views: 3420, claims: 211, img: 0, status: 'expired', sd: '2026-07-01', st: '07:00', ed: '2026-08-31', et: '23:00', red: 300 },
-  { id: 12, title: 'Back-to-school breakfast', type: 'Set menu', deal: 'AED 59', desc: '', window: 'Weekdays · 7–9 AM', dates: 'Ended 14 Sep', views: 1190, claims: 64, img: 1, status: 'expired', sd: '2026-09-01', st: '07:00', ed: '2026-09-14', et: '09:00', red: 100 },
+  { id: 1, outletId: 'o-jum', title: 'Spanish latte 2-for-1', type: 'Discount', deal: '2 for 1', desc: 'Bring a friend: two Spanish lattes for the price of one, every morning.', window: 'Daily · 7–11 AM', dates: 'Until 30 Sep', views: 1284, claims: 96, img: 0, status: 'active', live: true, left: '14m left', pct: 6, sd: '2026-09-01', st: '07:00', ed: '2026-09-30', et: '11:00', red: 150 },
+  { id: 2, outletId: 'o-jum', title: 'Breakfast for two', type: 'Set menu', deal: 'AED 99', desc: 'Shakshuka, labneh, fresh bread, juice and two coffees.', window: 'Daily · 8 AM–12 PM', dates: 'Until 15 Oct', views: 940, claims: 58, img: 1, status: 'active', live: true, left: '1h 14m left', pct: 30, sd: '2026-09-10', st: '08:00', ed: '2026-10-15', et: '12:00', red: 120 },
+  { id: 3, outletId: 'o-jum', title: 'Work-from-café day pass', type: 'Discount', deal: '20% off', desc: '20% off your whole bill, fast Wi-Fi and a quiet corner.', window: 'Weekdays · 9 AM–6 PM', dates: 'Until 31 Oct', views: 611, claims: 33, img: 4, status: 'active', live: true, left: '7h 14m left', pct: 80, sd: '2026-09-15', st: '09:00', ed: '2026-10-31', et: '18:00', red: 200 },
+  { id: 4, outletId: 'o-mar-roof', title: 'Sunset terrace set menu', type: 'Set menu', deal: 'AED 145', desc: 'Three courses on the terrace as the sun goes down.', window: 'Daily · 5–8 PM', dates: 'Until 30 Sep', views: 862, claims: 41, img: 0, status: 'active', live: false, sd: '2026-09-05', st: '17:00', ed: '2026-09-30', et: '20:00', red: 80 },
+  { id: 5, outletId: 'o-jum', title: 'Mocktail happy hour', type: 'Happy hour', deal: '30% off', desc: '30% off all mocktails and iced drinks.', window: 'Daily · 4–7 PM', dates: 'Until 20 Oct', views: 1102, claims: 74, img: 2, status: 'active', live: false, sd: '2026-09-01', st: '16:00', ed: '2026-10-20', et: '19:00', red: 300 },
+  { id: 7, outletId: 'o-jum', title: 'Kids eat free', type: 'Discount', deal: 'Kids free', desc: 'One free kids meal with every adult main.', window: 'Sat–Sun · All day', dates: 'Until 31 Dec', views: 730, claims: 29, img: 5, status: 'active', live: false, sd: '2026-09-06', st: '08:00', ed: '2026-12-31', et: '22:00', red: 100 },
+  { id: 8, outletId: 'o-jum', title: 'Winter hot chocolate bar', type: 'Discount', deal: 'AED 25', desc: 'Build-your-own hot chocolate with toppings.', window: 'Daily · 3–9 PM', dates: 'Starts 15 Oct', views: 0, claims: 0, img: 2, status: 'scheduled', sd: '2026-10-15', st: '15:00', ed: '2026-12-31', et: '21:00', red: 200 },
+  { id: 10, outletId: 'o-mar-lobby', title: 'Ladies morning', type: 'Discount', deal: '25% off', desc: '25% off breakfast every Tuesday.', window: 'Tuesdays · 8–11 AM', dates: 'Not scheduled', views: 0, claims: 0, img: 4, status: 'draft', sd: '', st: '08:00', ed: '', et: '11:00', red: 50 },
+  { id: 11, outletId: 'o-mar-lobby', title: 'Summer iced coffee 3 for 2', type: 'Discount', deal: '3 for 2', desc: '', window: 'Daily · All day', dates: 'Ended 31 Aug', views: 3420, claims: 211, img: 0, status: 'expired', sd: '2026-07-01', st: '07:00', ed: '2026-08-31', et: '23:00', red: 300 },
+  { id: 12, outletId: 'o-mar-lobby', title: 'Back-to-school breakfast', type: 'Set menu', deal: 'AED 59', desc: '', window: 'Weekdays · 7–9 AM', dates: 'Ended 14 Sep', views: 1190, claims: 64, img: 1, status: 'expired', sd: '2026-09-01', st: '07:00', ed: '2026-09-14', et: '09:00', red: 100 },
 ];
 
 export const BOOKINGS: Booking[] = [
@@ -183,8 +183,6 @@ export const HOURS: [day: string, open: string, close: string][] = [
   ['Sunday', '8:00 AM', '11:00 PM'],
 ];
 
-export const LOCATIONS = ['Jumeirah 1', 'Dubai Marina', 'Downtown Dubai'];
-
 export const PLAN_PRICE: Record<Plan, string> = { Starter: 'AED 299', Growth: 'AED 799', Enterprise: 'Custom' };
 
 export const PLANS: { name: Plan; price: string; unit: string; feats: string[] }[] = [
@@ -224,20 +222,21 @@ export const SERIES: Record<Range, Series> = {
 export const RANGES: [Range, string][] = [['today', 'Today'], ['7d', '7 days'], ['30d', '30 days']];
 
 export const VIEW_SOURCES: { label: string; pct: number; className: string }[] = [
-  { label: 'Search', pct: 42, className: 'bg-brand-purple' },
-  { label: 'Recommendations', pct: 35, className: 'bg-brand-peach' },
-  { label: 'Shared by friends', pct: 16, className: 'bg-brand-teal' },
-  { label: 'Your profile link', pct: 7, className: 'bg-muted-lilac' },
+  { label: 'Search', pct: 45, className: 'bg-brand-purple' },
+  { label: 'Recommendations', pct: 38, className: 'bg-brand-peach' },
+  { label: 'Shared by friends', pct: 17, className: 'bg-brand-teal' },
 ];
 
 // Copy for each section's empty state, shown once the API can return no data.
 export const EMPTY_COPY: Record<string, [title: string, body: string, cta: string]> = {
   dashboard: ['Your numbers will show up here', 'Once people start finding Qahwa House, you will see views, claims and bookings here. Posting an offer is the quickest way to get noticed.', 'Post your first offer'],
+  events: ['No events yet', 'A jazz night, a quiz, a brunch: add it to one of your places and clients can find it.', 'Add an event'],
+  activities: ['No activities yet', 'A class, a tasting, a kids\' corner: add it to one of your places.', 'Add an activity'],
   offers: ['No offers yet', 'Offers are how nearby people discover you. Start with something simple, like a morning coffee deal.', 'Create an offer'],
   bookings: ['No bookings yet', 'When customers book a table or claim an offer, they will appear here so you can confirm and check them in.', 'Post an offer'],
   customers: ['No customers yet', 'People who book, claim an offer or save Qahwa House will be listed here, with their visit history.', 'Post an offer'],
   analytics: ['Not enough data yet', 'Analytics fill in after your first week on Choices. Check back soon.', 'Go to dashboard'],
-  profile: ['Your listing is empty', 'Add a description, opening hours and a few photos so customers know what to expect.', 'Start your profile'],
+  branches: ['Your place is empty', 'Add a description, opening hours and a few photos so customers know what to expect.', 'Complete your place'],
   billing: ['You are not on a plan yet', 'Pick a plan to go live on Choices. Monthly billing, no contract, cancel any time.', 'Choose a plan'],
   settings: ['It is just you so far', 'Invite your team so they can manage bookings and offers with you.', 'Invite a team member'],
   help: ['No results found', 'We could not find an answer to that. Send us a message and the reply shows in Messages.', 'Contact support'],

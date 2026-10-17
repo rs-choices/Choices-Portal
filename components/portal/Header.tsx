@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { LOCKED_REASON } from '@/lib/portal/messages';
 import { ACTION_TOAST, type SectionId } from '@/lib/portal/sections';
+import { useListings } from './ListingsProvider';
 import { useMessages } from './MessagesProvider';
 import { NotificationBell } from './NotificationBell';
 import { usePortal } from './PortalProvider';
@@ -23,12 +24,16 @@ export function Header({
 }) {
   const { openOfferForm, showToast, tour } = usePortal();
   const { suspended, openSupportChat } = useMessages();
+  const { openEventForm, openActivityForm, setAddBranchOpen } = useListings();
   const newOffer = section === 'dashboard' || section === 'offers';
   // While suspended, actions that change what clients see are locked.
-  const locked = suspended && (newOffer || section === 'bookings' || section === 'profile');
+  const locked = suspended && (newOffer || section === 'bookings' || section === 'branches' || section === 'events' || section === 'activities');
 
   const onAction = () => {
     if (newOffer) openOfferForm();
+    else if (section === 'branches') setAddBranchOpen(true);
+    else if (section === 'events') openEventForm();
+    else if (section === 'activities') openActivityForm();
     else if (section === 'help') openSupportChat();
     else showToast(ACTION_TOAST[section] ?? '');
   };
@@ -64,7 +69,7 @@ export function Header({
         title={locked ? LOCKED_REASON : undefined}
         className={`shrink-0 ${highlight === 'btn' ? 'shadow-tour-ring' : ''}`}
       >
-        {newOffer && <Icon name="plus" size={18} stroke={2.2} />}
+        {(newOffer || section === 'branches' || section === 'events' || section === 'activities') && <Icon name="plus" size={18} stroke={2.2} />}
         {action}
       </Button>
     </header>
