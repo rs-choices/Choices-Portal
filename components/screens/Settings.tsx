@@ -160,7 +160,7 @@ export function Settings() {
             ))
           ) : (
             <div className="text-[13px] leading-normal text-fg-muted">
-              Running more than one venue? Manage every location from one account on Enterprise.{' '}
+              Running more than one location? Manage every location from one account on Enterprise.{' '}
               <Link href="/billing" className="font-semibold text-brand-peach hover:text-brand-peach-hover">
                 See plans
               </Link>

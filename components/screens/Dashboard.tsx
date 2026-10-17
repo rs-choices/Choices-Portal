@@ -27,7 +27,7 @@ export function Dashboard() {
     {
       key: 'photos',
       label: 'Add photos',
-      sub: 'Venues with 5+ photos get 2× more views',
+      sub: 'Businesses with 5+ photos get 2× more views',
       go: () => {
         completeChecklist('photos');
         router.push('/profile');

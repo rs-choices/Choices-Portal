@@ -6,7 +6,7 @@ import { usePortal } from './PortalProvider';
 
 export const TOUR: { t: string; b: string; img?: boolean; hl?: 'nav' | 'btn' | 'bell' }[] = [
   { t: 'Welcome to your Choices portal', b: 'This is where you run Qahwa House on Choices: offers, bookings, customers and your listing. Here is a quick look around.', img: true },
-  { t: 'Everything lives in the sidebar', b: 'Jump between your dashboard, offers, bookings and more. Your plan and venue are at the bottom, with your account menu.', hl: 'nav' },
+  { t: 'Everything lives in the sidebar', b: 'Jump between your dashboard, offers, bookings and more. Your plan and business are at the bottom, with your account menu.', hl: 'nav' },
   { t: 'Post an offer from any page', b: 'Every page has one main action in the top right. On the dashboard and Offers page, it creates a new offer with a live preview of how it looks in the app.', hl: 'btn' },
   { t: 'Never miss a booking', b: 'New bookings, reviews, offers about to end and messages from the Choices team show up in notifications. Confirm and check people in from Bookings.', hl: 'bell' },
   { t: 'You are ready to go', b: 'Start with one simple offer, like a morning coffee deal. You can pause, edit or end it any time.' },

@@ -9,7 +9,7 @@ export const SECTIONS: { id: SectionId; label: string; icon: IconName; action: s
   { id: 'bookings', label: 'Bookings', icon: 'cal', action: 'Add walk-in' },
   { id: 'customers', label: 'Customers', icon: 'users', action: 'Export list' },
   { id: 'analytics', label: 'Analytics', icon: 'chart', action: 'Download report' },
-  { id: 'profile', label: 'Venue profile', icon: 'store', action: 'Save changes' },
+  { id: 'profile', label: 'Business profile', icon: 'store', action: 'Save changes' },
   { id: 'billing', label: 'Billing & plan', icon: 'card', action: 'Download invoice' },
   { id: 'settings', label: 'Settings', icon: 'sliders', action: 'Save changes' },
   { id: 'help', label: 'Help & support', icon: 'help', action: 'Contact support' },

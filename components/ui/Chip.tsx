@@ -13,7 +13,7 @@ export function Chip({ on, className = '', ...rest }: ButtonHTMLAttributes<HTMLB
   );
 }
 
-// Outlined variant used for venue tags.
+// Outlined variant used for business tags.
 export function TagChip({ on, className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { on: boolean }) {
   return (
     <button

@@ -141,7 +141,7 @@ const CASES: Conversation[] = [
     item: { label: 'Listing: Qahwa House · Jumeirah 1', hidden: false },
     messages: [
       { from: 'team', text: 'A client reported that your listing shows you open until midnight on Fridays, but you closed at 10 PM.', when: 'Yesterday' },
-      { from: 'team', text: 'Please update your Friday hours in Venue profile, then mark this as fixed.', when: 'Yesterday' },
+      { from: 'team', text: 'Please update your Friday hours in Business profile, then mark this as fixed.', when: 'Yesterday' },
     ],
   },
   {
@@ -154,7 +154,7 @@ const CASES: Conversation[] = [
     messages: [
       { from: 'team', text: 'A client reported one of your photos as not showing your business. We hid it while we check.', when: '3 days ago' },
       { from: 'business', text: 'That one came from our agency. We will upload our own.', when: '3 days ago' },
-      { from: 'team', text: 'Thanks. We removed the photo. You can add a new one in Venue profile at any time.', when: '2 days ago' },
+      { from: 'team', text: 'Thanks. We removed the photo. You can add a new one in Business profile at any time.', when: '2 days ago' },
     ],
   },
   {
@@ -256,13 +256,13 @@ export const ACCOUNT_EFFECTS: Record<'suspended' | 'payment-failed' | 'changes-r
     },
   },
   'payment-failed': {
-    notice: { id: 'n-payment-failed', kind: 'payment', title: 'Your payment didn’t go through', body: `${PLAN_PRICE.Starter} + VAT for October. Update your card.`, when: 'Just now', read: false, emailed: true, conversationId: 'c-payment-failed' },
+    notice: { id: 'n-payment-failed', kind: 'payment', title: 'Your payment didn’t go through', body: `${PLAN_PRICE.Starter} + VAT for September. Update your card.`, when: 'Just now', read: false, emailed: true, conversationId: 'c-payment-failed' },
     conversation: {
       id: 'c-payment-failed',
       kind: 'notice',
       subject: 'Your payment didn’t go through',
       status: 'closed',
-      messages: [{ from: 'team', text: `We couldn’t take ${PLAN_PRICE.Starter} + VAT for October. Update your card in Billing & plan so your listings stay live. The Choices team will try the payment again once your card is updated.`, when: 'Just now' }],
+      messages: [{ from: 'team', text: `We couldn’t take ${PLAN_PRICE.Starter} + VAT for September. Update your card in Billing & plan so your listings stay live. The Choices team will try the payment again once your card is updated.`, when: 'Just now' }],
     },
   },
   'changes-requested': {

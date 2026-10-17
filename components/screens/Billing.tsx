@@ -1,5 +1,6 @@
 'use client';
 
+import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -9,14 +10,23 @@ import { INVOICES, PLAN_PRICE, PLANS } from '@/lib/portal/data';
 
 export function Billing() {
   const { plan, setPlan, showToast } = usePortal();
+  const { flags } = useMessages();
+  const failed = flags.includes('payment-failed');
 
+  // An upgrade applies now and charges the difference; a downgrade starts
+  // with the next month, so the current plan stays until then.
   const pick = (name: (typeof PLANS)[number]['name']) => {
     if (name === 'Enterprise') {
-      showToast('Thanks! Our sales team will call you within one working day.');
+      showToast('Thanks. Our sales team will call you within one working day.');
       return;
     }
-    setPlan(name);
-    showToast(`You are now on ${name}. Changes apply from today.`);
+    const order = PLANS.map((p) => p.name);
+    if (order.indexOf(name) > order.indexOf(plan)) {
+      setPlan(name);
+      showToast(`You are now on ${name}. We charged the difference for this month.`);
+    } else {
+      showToast(`You move to ${name} on 1 Oct 2026. ${plan} stays until then.`);
+    }
   };
 
   return (
@@ -85,7 +95,11 @@ export function Billing() {
               <span className="font-semibold">{no}</span>
               <span className="text-fg-soft">{date}</span>
               <span>{plan === 'Growth' ? 'AED 838.95' : 'AED 313.95'}</span>
-              <Badge className="justify-self-start bg-brand-teal/12 px-[9px] py-[3px] text-[11px] text-teal-ink">Paid</Badge>
+              {failed && no === INVOICES[0][0] ? (
+                <Badge className="justify-self-start bg-brand-peach/14 px-[9px] py-[3px] text-[11px] text-peach-ink">Failed</Badge>
+              ) : (
+                <Badge className="justify-self-start bg-brand-teal/12 px-[9px] py-[3px] text-[11px] text-teal-ink">Paid</Badge>
+              )}
               <button
                 type="button"
                 onClick={() => showToast(`${no} downloaded`)}
