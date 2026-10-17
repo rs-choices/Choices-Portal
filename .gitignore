@@ -42,3 +42,6 @@ next-env.d.ts
 
 # netlify
 .netlify
+
+# Claude Code worktrees (local only)
+.claude/worktrees/
