@@ -7,17 +7,22 @@ import { FieldError, Input, Label, Textarea } from '@/components/ui/Field';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { PhoneFrame, StatusBar } from '@/components/ui/PhoneFrame';
+import { NOT_VERIFIED } from '@/components/listings/shared';
+import { WherePicker } from '@/components/listings/WherePicker';
 import { IMG, TODAY, VENUE, type OfferType } from '@/lib/portal/data';
 import { fmtDate, fmtTime } from '@/lib/portal/format';
+import { useListings } from './ListingsProvider';
 import { usePortal } from './PortalProvider';
 
-const TYPES: OfferType[] = ['Discount', 'Set menu', 'Happy hour', 'Event'];
+const TYPES: OfferType[] = ['Discount', 'Set menu', 'Happy hour'];
 
 // New / edit offer dialog, with a live preview of the card in the Choices app.
 export function OfferFormModal() {
   const { form: f, setFormField: set, closeOfferForm, saveOfferForm } = usePortal();
+  const { canPublish } = useListings();
   const [error, setError] = useState(false);
   if (!f) return null;
+  const publishable = !f.outletId || canPublish(f.outletId);
 
   const save = (asDraft: boolean) => setError(!saveOfferForm(asDraft));
   const close = () => {
@@ -34,6 +39,8 @@ export function OfferFormModal() {
             <h2 className="m-0 text-[22px] font-bold text-brand-purple">{f.id ? 'Edit offer' : 'New offer'}</h2>
             <IconButton icon="close" iconSize={18} stroke={1.8} aria-label="Close" onClick={close} />
           </div>
+
+          <WherePicker value={f.outletId} onChange={(id) => set('outletId', id)} />
 
           <div className="flex flex-col gap-2.5">
             <span className="font-medium text-brand-purple">Offer type</span>
@@ -56,7 +63,7 @@ export function OfferFormModal() {
                 }}
                 placeholder="e.g. Mocktail happy hour"
               />
-              {error && <FieldError className="text-xs font-normal">Give your offer a title so customers know what it is.</FieldError>}
+              {error && <FieldError className="text-xs font-normal">{f.outletId ? 'Give your offer a title so customers know what it is.' : 'Choose the place this offer is for.'}</FieldError>}
             </Label>
             <Label label="Deal or price">
               <Input value={f.deal} onChange={(e) => set('deal', e.target.value)} placeholder={f.type === 'Discount' ? 'e.g. 20% off' : 'e.g. AED 99'} />
@@ -114,7 +121,7 @@ export function OfferFormModal() {
             <Button variant="secondary" onClick={() => save(true)}>
               Save as draft
             </Button>
-            <Button className="px-[26px]" onClick={() => save(false)}>
+            <Button className="px-[26px]" onClick={() => save(false)} disabled={!publishable} title={publishable ? undefined : NOT_VERIFIED}>
               Publish offer
             </Button>
           </div>
@@ -134,7 +141,7 @@ export function OfferFormModal() {
             >
               <div className="absolute inset-0 bg-linear-to-t from-black/78 to-black/0 to-60%" />
               <span className="absolute top-3 left-3 rounded-pill bg-brand-peach px-[11px] py-[5px] text-xs font-bold text-inverse">
-                {f.deal || (f.type === 'Event' ? 'Event' : 'Deal')}
+                {f.deal || 'Deal'}
               </span>
               <span className="absolute top-3 right-3 rounded-pill bg-surface/90 px-2.5 py-[5px] text-[11px] font-bold text-brand-purple">{f.type}</span>
               <div className="absolute right-3.5 bottom-3.5 left-3.5 flex flex-col gap-1 text-inverse">

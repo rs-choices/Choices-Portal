@@ -8,13 +8,13 @@ import { Chip } from '@/components/ui/Chip';
 import { Input, Label, Select, Textarea } from '@/components/ui/Field';
 import { Icon } from '@/components/ui/Icon';
 import { fmtTime } from '@/lib/portal/format';
-import { CoverBadge } from '@/components/screens/Profile';
+import { CoverBadge } from '@/components/listings/PlaceEditor';
 import { usePortal } from '@/components/portal/PortalProvider';
 
 const STEPS = ['Create your profile', 'Add hours & photos', 'Post your first offer'];
 const CATEGORIES = ['Restaurant', 'Café', 'Lounge', 'Activity', 'Events'];
 const AREAS = ['Jumeirah', 'Dubai Marina', 'Downtown Dubai', 'Business Bay', 'JLT', 'Al Barsha'];
-const OFFER_TYPES = ['Discount', 'Set menu', 'Happy hour', 'Event'];
+const OFFER_TYPES = ['Discount', 'Set menu', 'Happy hour'];
 
 export function Onboarding() {
   const { finishOnboarding } = usePortal();
@@ -96,7 +96,7 @@ export function Onboarding() {
 
             {step === 1 && (
               <>
-                <StepHeading title="When are you open?">You can set different hours per day later in Business profile.</StepHeading>
+                <StepHeading title="When are you open?">You can set different hours per day later in Branches.</StepHeading>
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
                   <Label label="Opens">
                     <Input size="lg" type="time" value={ob.open} onChange={(e) => set('open')(e.target.value)} />

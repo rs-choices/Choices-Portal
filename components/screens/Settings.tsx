@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Badge } from '@/components/ui/Badge';
@@ -9,7 +8,7 @@ import { Card, CardTitle } from '@/components/ui/Card';
 import { Input, Label, Select } from '@/components/ui/Field';
 import { Segmented } from '@/components/ui/Segmented';
 import { Toggle } from '@/components/ui/Toggle';
-import { LOCATIONS, TEAM, VENUE } from '@/lib/portal/data';
+import { TEAM, VENUE } from '@/lib/portal/data';
 import { Avatar } from '@/components/ui/Avatar';
 
 const NOTIFICATIONS = [
@@ -20,7 +19,7 @@ const NOTIFICATIONS = [
 ] as const;
 
 export function Settings() {
-  const { plan, location, setLocation, showToast } = usePortal();
+  const { showToast } = usePortal();
   const [team, setTeam] = useState(TEAM);
   const [invEmail, setInvEmail] = useState('');
   const [invRole, setInvRole] = useState<'Manager' | 'Staff'>('Staff');
@@ -44,6 +43,29 @@ export function Settings() {
 
   return (
     <section className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-4">
+      <Card className="flex flex-col gap-3.5 p-6">
+        <CardTitle>Business details</CardTitle>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
+          <Label label="Business name">
+            <Input defaultValue={VENUE} />
+          </Label>
+          <Label label="Logo">
+            <Button variant="secondary" size="sm" className="self-start">
+              Upload logo
+            </Button>
+          </Label>
+        </div>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
+          <Label label="Business email">
+            <Input defaultValue="hello@qahwahouse.ae" />
+          </Label>
+          <Label label="Instagram">
+            <Input defaultValue="instagram.com/qahwahouse" />
+          </Label>
+        </div>
+        <span className="text-[13px] text-fg-muted">Each branch&apos;s photos, hours and WhatsApp are on Branches.</span>
+      </Card>
+
       <Card className="flex flex-col gap-3.5 p-6">
         <CardTitle>Your account</CardTitle>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
@@ -141,32 +163,6 @@ export function Settings() {
             <option>Arabia Standard Time (GMT+3) · Riyadh</option>
           </Select>
         </Label>
-        <div className="flex flex-col gap-2.5 border-t border-line-soft pt-3.5">
-          <span className="font-semibold text-brand-purple">Locations</span>
-          {plan === 'Enterprise' ? (
-            LOCATIONS.map((l, i) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => {
-                  setLocation(i);
-                  showToast(`Switched to ${VENUE} · ${l}`);
-                }}
-                className="flex cursor-pointer items-center gap-2.5 rounded-[12px] border-none bg-page px-3 py-2.5 text-left text-sm text-fg"
-              >
-                <span className={`size-2.5 rounded-full ${i === location ? 'bg-brand-peach' : 'bg-line-strong'}`} />
-                {VENUE} · {l}
-              </button>
-            ))
-          ) : (
-            <div className="text-[13px] leading-normal text-fg-muted">
-              Running more than one location? Manage every location from one account on Enterprise.{' '}
-              <Link href="/billing" className="font-semibold text-brand-peach hover:text-brand-peach-hover">
-                See plans
-              </Link>
-            </div>
-          )}
-        </div>
       </Card>
     </section>
   );

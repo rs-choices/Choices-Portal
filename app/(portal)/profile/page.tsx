@@ -1,8 +1,7 @@
-import type { Metadata } from 'next';
-import { Profile } from '@/components/screens/Profile';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = { title: 'Business profile' };
-
+// "Business profile" became Branches: each branch (and each outlet of a big
+// branch) has its own place details there. Old links land on Branches.
 export default function Page() {
-  return <Profile />;
+  redirect('/branches');
 }
