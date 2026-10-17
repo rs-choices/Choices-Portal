@@ -164,7 +164,7 @@ export const INVOICES: [no: string, date: string][] = [
 ];
 
 export const FAQ: [q: string, a: string][] = [
-  ['How do customers find my venue?', 'Choices shows your listing to people nearby based on what they are in the mood for, the time of day and their saved preferences. Active offers and a complete profile help you appear more often.'],
+  ['How do customers find my business?', 'Choices shows your listing to people nearby based on what they are in the mood for, the time of day and their saved preferences. Active offers and a complete profile help you appear more often.'],
   ['When does an offer go live?', 'As soon as you publish it, if the start time has passed. Otherwise it waits in Scheduled and goes live automatically.'],
   ['How do customers redeem an offer?', 'They claim it in the app and show the code to your staff. Check them in from Bookings so the redemption is counted.'],
   ['Can I cancel my plan?', 'Yes. Billing is monthly with no contract. Cancel any time from Billing & plan and your listing stays live until the end of the month.'],
@@ -240,5 +240,5 @@ export const EMPTY_COPY: Record<string, [title: string, body: string, cta: strin
   profile: ['Your listing is empty', 'Add a description, opening hours and a few photos so customers know what to expect.', 'Start your profile'],
   billing: ['You are not on a plan yet', 'Pick a plan to go live on Choices. Monthly billing, no contract, cancel any time.', 'Choose a plan'],
   settings: ['It is just you so far', 'Invite your team so they can manage bookings and offers with you.', 'Invite a team member'],
-  help: ['No results found', 'We could not find an answer to that. Our team usually replies within a few hours.', 'Contact support'],
+  help: ['No results found', 'We could not find an answer to that. Send us a message and the reply shows in Messages.', 'Contact support'],
 };

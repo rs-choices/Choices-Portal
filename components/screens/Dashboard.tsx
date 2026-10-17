@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Button } from '@/components/ui/Button';
 import { Card, CardTitle } from '@/components/ui/Card';
@@ -11,11 +12,13 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Segmented } from '@/components/ui/Segmented';
 import { IMG, RANGES, SERIES, VENUE, type Range } from '@/lib/portal/data';
 import { firstName } from '@/lib/portal/format';
+import { LOCKED_REASON } from '@/lib/portal/messages';
 import { Chart, ChartLabels, Legend } from './Chart';
 
 export function Dashboard() {
   const router = useRouter();
   const { offers, bookings, checklist, completeChecklist, openOfferForm, setBookingStatus } = usePortal();
+  const { suspended } = useMessages();
   const [range, setRange] = useState<Range>('7d');
   const d = SERIES[range];
 
@@ -24,7 +27,7 @@ export function Dashboard() {
     {
       key: 'photos',
       label: 'Add photos',
-      sub: 'Venues with 5+ photos get 2× more views',
+      sub: 'Businesses with 5+ photos get 2× more views',
       go: () => {
         completeChecklist('photos');
         router.push('/profile');
@@ -63,7 +66,9 @@ export function Dashboard() {
                   key={c.key}
                   type="button"
                   onClick={c.go}
-                  className="flex cursor-pointer items-start gap-3 rounded-lg border-none bg-page p-3.5 text-left hover:bg-fill-row"
+                  disabled={suspended && c.key === 'offer'}
+                  title={suspended && c.key === 'offer' ? LOCKED_REASON : undefined}
+                  className="flex cursor-pointer items-start gap-3 rounded-lg border-none bg-page p-3.5 text-left hover:bg-fill-row disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   {isDone ? (
                     <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand-teal text-inverse">

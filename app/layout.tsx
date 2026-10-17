@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: "Choices Business Portal", template: "%s · Choices Business Portal" },
-  description: "Post offers, manage bookings and see how customers find your venue on Choices.",
+  description: "Post offers, manage bookings and see how customers find your business on Choices.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

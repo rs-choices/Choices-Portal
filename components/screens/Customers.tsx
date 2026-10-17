@@ -1,16 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import { ReportDialog } from '@/components/customers/ReportDialog';
+import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button, TextButton } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Textarea } from '@/components/ui/Field';
 import { Star } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Segmented } from '@/components/ui/Segmented';
-import { CUSTOMERS, REVIEWS, VISIT_HISTORY } from '@/lib/portal/data';
+import { BOOKINGS, CUSTOMERS, REVIEWS, VISIT_HISTORY } from '@/lib/portal/data';
+import { CLIENT_REPORT_REASONS, REVIEW_REPORT_REASONS } from '@/lib/portal/messages';
 import { firstName } from '@/lib/portal/format';
 
 type Filter = 'all' | 'new' | 'returning' | 'active';
@@ -25,6 +28,8 @@ const COLS = 'grid grid-cols-[minmax(200px,2.2fr)_repeat(4,minmax(70px,1fr))] ga
 
 export function Customers() {
   const { showToast } = usePortal();
+  const { report, reportedReviewIds, reportedCustomerIds } = useMessages();
+  const [reporting, setReporting] = useState<{ kind: 'review'; id: number } | { kind: 'client'; id: number } | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [sel, setSel] = useState<number | null>(1);
   const [reviews, setReviews] = useState(REVIEWS);
@@ -36,6 +41,7 @@ export function Customers() {
   if (filter === 'returning') list = CUSTOMERS.filter((c) => c.seg === 'returning');
   if (filter === 'active') list = [...CUSTOMERS].sort((a, b) => b.visits - a.visits).slice(0, 4);
   const selected = CUSTOMERS.find((c) => c.id === sel);
+  const reportedClient = reporting?.kind === 'client' ? CUSTOMERS.find((c) => c.id === reporting.id) : undefined;
   const history = selected ? VISIT_HISTORY.slice(0, Math.max(1, Math.min(6, selected.visits))) : [];
 
   const sendReply = (id: number, name: string) => {
@@ -125,6 +131,13 @@ export function Customers() {
                 </div>
               ))}
             </div>
+            {reportedCustomerIds.includes(selected.id) ? (
+              <span className="self-start text-[13px] font-semibold text-fg-subtle">Reported</span>
+            ) : (
+              <TextButton className="self-start text-[13px]" onClick={() => setReporting({ kind: 'client', id: selected.id })}>
+                Report client
+              </TextButton>
+            )}
           </Card>
         )}
       </div>
@@ -154,6 +167,13 @@ export function Customers() {
                 </div>
               </div>
               <div className="leading-[1.55] text-fg-strong">{r.text}</div>
+              {reportedReviewIds.includes(r.id) ? (
+                <span className="self-start text-xs font-semibold text-fg-subtle">Reported</span>
+              ) : (
+                <TextButton className="self-start text-xs" onClick={() => setReporting({ kind: 'review', id: r.id })}>
+                  Report review
+                </TextButton>
+              )}
               {r.reply && (
                 <div className="flex flex-col gap-1 rounded-md bg-page px-3.5 py-3">
                   <span className="text-xs font-bold text-brand-purple">Your reply</span>
@@ -196,6 +216,29 @@ export function Customers() {
           ))}
         </div>
       </div>
+
+      <ReportDialog
+        open={reporting?.kind === 'review'}
+        title="Report review"
+        reasons={REVIEW_REPORT_REASONS}
+        note="The author won't be told who reported it."
+        onClose={() => setReporting(null)}
+        onSubmit={({ reason, details }) => {
+          const r = reviews.find((x) => x.id === reporting?.id);
+          if (r) report({ kind: 'review-report', subject: `Review by ${r.name}`, reason, details, reviewId: r.id });
+        }}
+      />
+      <ReportDialog
+        open={reporting?.kind === 'client'}
+        title="Report client"
+        reasons={CLIENT_REPORT_REASONS}
+        bookings={reportedClient ? BOOKINGS.filter((b) => b.name === reportedClient.name).map((b) => `${b.time} · party of ${b.party}`) : []}
+        onClose={() => setReporting(null)}
+        onSubmit={({ reason, details, booking }) => {
+          if (reportedClient)
+            report({ kind: 'client-report', subject: `Client ${reportedClient.name}`, reason, details: booking ? `Booking: ${booking}. ${details}` : details, customerId: reportedClient.id });
+        }}
+      />
     </section>
   );
 }
