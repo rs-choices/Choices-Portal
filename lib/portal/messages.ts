@@ -141,7 +141,7 @@ const CASES: Conversation[] = [
     item: { label: 'Listing: Qahwa House · Jumeirah 1', hidden: false },
     messages: [
       { from: 'team', text: 'A client reported that your listing shows you open until midnight on Fridays, but you closed at 10 PM.', when: 'Yesterday' },
-      { from: 'team', text: 'Please update your Friday hours in Business profile, then mark this as fixed.', when: 'Yesterday' },
+      { from: 'team', text: 'Please update your Friday hours in Branches, then mark this as fixed.', when: 'Yesterday' },
     ],
   },
   {
@@ -154,7 +154,7 @@ const CASES: Conversation[] = [
     messages: [
       { from: 'team', text: 'A client reported one of your photos as not showing your business. We hid it while we check.', when: '3 days ago' },
       { from: 'business', text: 'That one came from our agency. We will upload our own.', when: '3 days ago' },
-      { from: 'team', text: 'Thanks. We removed the photo. You can add a new one in Business profile at any time.', when: '2 days ago' },
+      { from: 'team', text: 'Thanks. We removed the photo. You can add a new one in Branches at any time.', when: '2 days ago' },
     ],
   },
   {
@@ -187,7 +187,7 @@ const CASES: Conversation[] = [
     status: 'closed',
     messages: [
       { from: 'business', text: 'We are opening in Dubai Marina next month. How do we add it?', when: '1 week ago' },
-      { from: 'team', text: 'Use the location switcher in the sidebar, then Add branch. We verify it within two working days.', when: '6 days ago' },
+      { from: 'team', text: 'Go to Branches › Add branch. We verify it within two working days.', when: '6 days ago' },
     ],
   },
   {

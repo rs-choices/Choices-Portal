@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { BranchFilter, useInBranch } from '@/components/listings/shared';
+import { useListings } from '@/components/portal/ListingsProvider';
 import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal, type OfferTab } from '@/components/portal/PortalProvider';
 import { Badge } from '@/components/ui/Badge';
@@ -11,6 +14,7 @@ import { IconButton } from '@/components/ui/IconButton';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { IMG, STATUS, type Offer } from '@/lib/portal/data';
 import { LOCKED_REASON } from '@/lib/portal/messages';
+import { placeLabel } from '@/lib/portal/places';
 
 const TABS: [OfferTab, string, (o: Offer) => boolean][] = [
   ['active', 'Active', (o) => o.status === 'active' || o.status === 'paused'],
@@ -22,8 +26,11 @@ const TABS: [OfferTab, string, (o: Offer) => boolean][] = [
 export function Offers() {
   const { offers, plan, offerTab, setOfferTab, openOfferForm, updateOffer, duplicateOffer } = usePortal();
   const { suspended } = useMessages();
+  const { outlets, branches } = useListings();
+  const inBranch = useInBranch();
+  const [branchId, setBranchId] = useState('');
   const tab = TABS.find((t) => t[0] === offerTab)!;
-  const list = offers.filter(tab[2]);
+  const list = offers.filter(tab[2]).filter((o) => inBranch(o.outletId, branchId));
   const active = offers.filter((o) => o.status === 'active').length;
   const limit = plan === 'Starter' ? 10 : null;
 
@@ -63,11 +70,14 @@ export function Offers() {
         </div>
       </div>
 
+      <BranchFilter value={branchId} onChange={setBranchId} />
+
       <div className="flex flex-col gap-3">
         {list.map((o) => (
           <OfferRow
             key={o.id}
             o={o}
+            place={placeLabel(outlets, branches, o.outletId)}
             locked={suspended}
             onPause={() => updateOffer(o.id, { status: 'paused', live: false }, 'Offer paused. It is hidden from the app until you resume it.')}
             onResume={() => updateOffer(o.id, { status: 'active' }, 'Offer resumed')}
@@ -90,9 +100,9 @@ export function Offers() {
   );
 }
 
-type RowProps = { o: Offer; locked: boolean; onPause: () => void; onResume: () => void; onEnd: () => void; onEdit: () => void; onDuplicate: () => void };
+type RowProps = { o: Offer; place: string; locked: boolean; onPause: () => void; onResume: () => void; onEnd: () => void; onEdit: () => void; onDuplicate: () => void };
 
-function OfferRow({ o, locked, onPause, onResume, onEnd, onEdit, onDuplicate }: RowProps) {
+function OfferRow({ o, place, locked, onPause, onResume, onEnd, onEdit, onDuplicate }: RowProps) {
   const st = STATUS[o.status];
   // While the business is suspended, every action here changes what clients see.
   const lock = { disabled: locked };
@@ -108,6 +118,7 @@ function OfferRow({ o, locked, onPause, onResume, onEnd, onEdit, onDuplicate }: 
           <span className="rounded-sm bg-brand-peach/12 px-2 py-0.5 font-bold text-peach-ink">{o.deal}</span>
           <span>{o.type}</span>·<span>{o.window}</span>·<span>{o.dates}</span>
         </div>
+        <div className="text-[13px] text-fg-soft">At {place}</div>
       </div>
       <div className="flex gap-6 px-2">
         <Metric label="Views" value={o.views} />
