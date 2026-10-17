@@ -61,8 +61,8 @@ export function Onboarding() {
           <div className="flex flex-col gap-[22px] rounded-xl bg-surface p-8 shadow-card">
             {step === 0 && (
               <>
-                <StepHeading title="Let's set up your venue">This is what people see when Choices recommends you.</StepHeading>
-                <Label label="Venue name">
+                <StepHeading title="Let's set up your business">This is what people see when Choices recommends you.</StepHeading>
+                <Label label="Business name">
                   <Input size="lg" value={ob.name} onChange={(e) => set('name')(e.target.value)} />
                 </Label>
                 <div className="flex flex-col gap-2.5">
@@ -96,7 +96,7 @@ export function Onboarding() {
 
             {step === 1 && (
               <>
-                <StepHeading title="When are you open?">You can set different hours per day later in Venue profile.</StepHeading>
+                <StepHeading title="When are you open?">You can set different hours per day later in Business profile.</StepHeading>
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
                   <Label label="Opens">
                     <Input size="lg" type="time" value={ob.open} onChange={(e) => set('open')(e.target.value)} />
@@ -144,10 +144,11 @@ export function Onboarding() {
                   <div className="absolute right-4 bottom-4 left-4 text-inverse">
                     <div className="text-xl font-bold">{ob.offer}</div>
                     <div className="text-[13px] opacity-90">
-                      {ob.name || 'Your venue'} · {ob.area} · Today until {fmtTime(ob.close)}
+                      {ob.name || 'Your business'} · {ob.area} · Today until {fmtTime(ob.close)}
                     </div>
                   </div>
                 </div>
+                <p className="m-0 text-[13px] text-fg-muted">Your listing and offer go live once the Choices team verifies your business.</p>
               </>
             )}
 
@@ -159,7 +160,7 @@ export function Onboarding() {
               )}
               <div className="flex-1" />
               <Button size="lg" onClick={() => (step < 2 ? setStep(step + 1) : finishOnboarding())}>
-                {step < 2 ? 'Continue' : 'Finish and go live'}
+                {step < 2 ? 'Continue' : 'Finish and send for verification'}
               </Button>
             </div>
           </div>

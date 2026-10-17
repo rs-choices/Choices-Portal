@@ -32,7 +32,7 @@ export function Profile() {
         <Card className="flex flex-col gap-4 p-6">
           <CardTitle>About</CardTitle>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3.5">
-            <Label label="Venue name">
+            <Label label="Business name">
               <Input defaultValue={VENUE} />
             </Label>
             <Label label="Category">
