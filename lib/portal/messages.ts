@@ -80,7 +80,7 @@ export type Conversation = {
   // Shown on a closed report case.
   outcome?: string;
   // The listing or photo a listing report is about.
-  item?: { label: string; hidden: boolean };
+  item?: { label: string };
   rating?: number;
   reviewId?: number;
   customerId?: number;
@@ -138,7 +138,7 @@ const CASES: Conversation[] = [
     kind: 'listing-report',
     subject: 'Opening hours on your listing',
     status: 'fix',
-    item: { label: 'Listing: Qahwa House · Jumeirah 1', hidden: false },
+    item: { label: 'Listing: Qahwa House · Jumeirah 1' },
     messages: [
       { from: 'team', text: 'A client reported that your listing shows you open until midnight on Fridays, but you closed at 10 PM.', when: 'Yesterday' },
       { from: 'team', text: 'Please update your Friday hours in Branches, then mark this as fixed.', when: 'Yesterday' },
@@ -149,10 +149,10 @@ const CASES: Conversation[] = [
     kind: 'listing-report',
     subject: 'Photo reported as not from your business',
     status: 'closed',
-    item: { label: 'Photo: terrace at sunset', hidden: true },
+    item: { label: 'Photo: terrace at sunset' },
     outcome: 'Removed. The photo was a stock image, not your terrace.',
     messages: [
-      { from: 'team', text: 'A client reported one of your photos as not showing your business. We hid it while we check.', when: '3 days ago' },
+      { from: 'team', text: 'A client reported one of your photos as not showing your business. It stays live while we check.', when: '3 days ago' },
       { from: 'business', text: 'That one came from our agency. We will upload our own.', when: '3 days ago' },
       { from: 'team', text: 'Thanks. We removed the photo. You can add a new one in Branches at any time.', when: '2 days ago' },
     ],
@@ -231,7 +231,7 @@ export const NOTICES: Notice[] = [
   { id: 'n-reported', kind: 'report', title: 'Your listing was reported', body: 'A client reported your Friday opening hours', when: 'Yesterday', read: true, emailed: true, conversationId: 'c-listing-fix' },
   { id: 'n-review', kind: 'review', title: 'New 5-star review', body: 'Fatima Al Mansoori: “Best Spanish latte in Jumeirah…”', when: '2 days ago', read: true, emailed: false, href: '/customers' },
   { id: 'n-removed', kind: 'outcome', title: 'Report closed: photo removed', body: 'Your terrace at sunset photo was removed', when: '2 days ago', read: true, emailed: true, conversationId: 'c-photo-removed' },
-  { id: 'n-hidden', kind: 'report', title: 'Your photo is hidden while we review a report', body: 'Terrace at sunset', when: '3 days ago', read: true, emailed: false, conversationId: 'c-photo-removed' },
+  { id: 'n-photo-reported', kind: 'report', title: 'Your photo was reported', body: 'Terrace at sunset', when: '3 days ago', read: true, emailed: false, conversationId: 'c-photo-removed' },
   { id: 'n-payment', kind: 'payment', title: 'Next payment on 1 Oct', body: `${PLAN_PRICE.Starter} + VAT for your Starter plan`, when: '3 days ago', read: true, emailed: false, href: '/billing' },
   { id: 'n-review-outcome', kind: 'outcome', title: 'We reviewed the review you reported', body: 'Daniel Rossi’s review: author warned', when: '4 days ago', read: true, emailed: false, conversationId: 'c-review-report' },
   { id: 'n-republished', kind: 'listing', title: 'Listing published again by the Choices team', body: 'Your Dubai Marina listing is live again', when: '4 days ago', read: true, emailed: true, conversationId: 'c-republished' },
