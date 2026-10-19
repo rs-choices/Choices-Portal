@@ -8,6 +8,8 @@ import { outletsOf, placeLabel } from '@/lib/portal/places';
 // "Where does this go?" for every event, activity and offer: pick the branch,
 // then the outlet only when that branch has several. A business with one
 // branch and one outlet never sees either step, and never the word "outlet".
+// A branch waiting for verification is shown but can't be picked: nothing
+// can be added to it, not even a draft, until it is verified.
 export function WherePicker({ value, onChange }: { value: string; onChange: (outletId: string) => void }) {
   const { branches, outlets } = useListings();
   const [branchId, setBranchId] = useState<string | null>(null);
@@ -19,8 +21,8 @@ export function WherePicker({ value, onChange }: { value: string; onChange: (out
     else setBranchId(bid);
   };
 
-  // One branch with one place: choose it straight away.
-  const only = branches.length === 1 ? liveOf(branches[0].id) : [];
+  // One verified branch with one place: choose it straight away.
+  const only = branches.length === 1 && branches[0].status === 'verified' ? liveOf(branches[0].id) : [];
   const onlyId = only.length === 1 ? only[0].id : null;
   useEffect(() => {
     if (!value && onlyId) onChange(onlyId);
@@ -50,8 +52,13 @@ export function WherePicker({ value, onChange }: { value: string; onChange: (out
 
   const branch = branchId ? branches.find((b) => b.id === branchId) : null;
   const options = branch
-    ? liveOf(branch.id).map((o) => ({ id: o.id, title: o.name, sub: o.type }))
-    : branches.map((b) => ({ id: b.id, title: b.name, sub: b.status === 'waiting' ? 'Waiting for verification' : b.area }));
+    ? liveOf(branch.id).map((o) => ({ id: o.id, title: o.name, sub: o.type, locked: false }))
+    : branches.map((b) => ({
+        id: b.id,
+        title: b.name,
+        sub: b.status === 'waiting' ? 'Waiting for verification. You can add to it once it is verified.' : b.area,
+        locked: b.status === 'waiting',
+      }));
 
   return (
     <div className="flex flex-col gap-2">
@@ -61,14 +68,15 @@ export function WherePicker({ value, onChange }: { value: string; onChange: (out
           <button
             key={o.id}
             type="button"
+            disabled={o.locked}
             onClick={() => (branch ? onChange(o.id) : pickBranch(o.id))}
-            className="flex cursor-pointer items-center justify-between gap-3 rounded-md border-none bg-page px-3.5 py-3 text-left hover:bg-fill-row"
+            className="flex cursor-pointer items-center justify-between gap-3 rounded-md border-none bg-page px-3.5 py-3 text-left hover:bg-fill-row disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:bg-page"
           >
             <span className="flex flex-col">
               <span className="font-semibold text-fg">{o.title}</span>
               <span className="text-xs text-ink-muted">{o.sub}</span>
             </span>
-            <Icon name="chevronRight" size={16} className="text-brand-purple" />
+            {!o.locked && <Icon name="chevronRight" size={16} className="text-brand-purple" />}
           </button>
         ))}
       </div>
