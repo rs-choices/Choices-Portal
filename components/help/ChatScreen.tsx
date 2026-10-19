@@ -62,7 +62,6 @@ export function ChatScreen({ id }: { id: string }) {
         {c?.item && (
           <div className="flex flex-wrap items-center gap-2 self-center text-[13px] text-fg-soft">
             <span className="font-semibold text-fg">{c.item.label}</span>
-            {c.item.hidden && !closed && <span className="rounded-sm bg-brand-peach/12 px-2 py-0.5 font-semibold text-peach-ink">Hidden while we review</span>}
           </div>
         )}
         {c?.messages.map((m, i) => (
