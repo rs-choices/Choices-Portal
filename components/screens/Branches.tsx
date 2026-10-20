@@ -5,14 +5,13 @@ import { AddBranchDialog } from '@/components/listings/AddBranchDialog';
 import { PlaceEditor } from '@/components/listings/PlaceEditor';
 import { RequestOutletDialog } from '@/components/listings/RequestOutletDialog';
 import { useListings } from '@/components/portal/ListingsProvider';
-import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
-import { LOCKED_REASON } from '@/lib/portal/messages';
 import { canAddBranch, outletsOf, type Branch } from '@/lib/portal/places';
+import { useLock } from '@/components/portal/useLock';
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -20,12 +19,11 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 // place; a small branch's one outlet is just "the branch" and never named.
 export function Branches() {
   const { plan, offers } = usePortal();
-  const { suspended } = useMessages();
   const { branches, outlets, events, activities, addBranchOpen, setAddBranchOpen } = useListings();
   const [selId, setSelId] = useState(branches[0]?.id ?? '');
   const [outletId, setOutletId] = useState<string | null>(null);
   const [requestFor, setRequestFor] = useState<Branch | null>(null);
-  const lock = { disabled: suspended, title: suspended ? LOCKED_REASON : undefined };
+  const lock = useLock('branch.add');
 
   const sel = branches.find((b) => b.id === selId) ?? branches[0];
   const all = sel ? outletsOf(outlets, sel.id) : [];

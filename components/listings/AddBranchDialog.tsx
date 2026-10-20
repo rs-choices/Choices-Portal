@@ -5,10 +5,12 @@ import { useListings } from '@/components/portal/ListingsProvider';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input, Label } from '@/components/ui/Field';
+import { useLock } from '@/components/portal/useLock';
 
 // A new branch is a new place. It waits for the Choices team to verify it.
 export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { addBranch } = useListings();
+  const lock = useLock('branch.add');
   const [name, setName] = useState('');
   const [area, setArea] = useState('');
   const [address, setAddress] = useState('');
@@ -35,7 +37,8 @@ export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () 
           </Button>
           <Button
             size="md"
-            disabled={!ready}
+            disabled={lock.disabled || !ready}
+            title={lock.title}
             onClick={() => {
               addBranch({ name: name.trim(), area: area.trim() || name.trim(), address: address.trim(), licence: licence.trim() });
               close();

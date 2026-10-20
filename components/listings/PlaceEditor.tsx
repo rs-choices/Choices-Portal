@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useListings } from '@/components/portal/ListingsProvider';
-import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Button } from '@/components/ui/Button';
 import { Card, CardTitle } from '@/components/ui/Card';
@@ -13,14 +12,13 @@ import { Icon, Star } from '@/components/ui/Icon';
 import { PhoneFrame, StatusBar } from '@/components/ui/PhoneFrame';
 import { Segmented } from '@/components/ui/Segmented';
 import { IMG, TAGS, VENUE } from '@/lib/portal/data';
-import { LOCKED_REASON } from '@/lib/portal/messages';
 import { PRICE_BANDS, type Outlet } from '@/lib/portal/places';
+import { useLock } from '@/components/portal/useLock';
 
 // The place clients see: one per outlet. For a small branch this is simply
 // "the branch"; a big branch has one per outlet. Remount it per outlet (key)
 // so the form starts from that outlet's details.
 export function PlaceEditor({ outlet }: { outlet: Outlet }) {
-  const { suspended } = useMessages();
   const { offers } = usePortal();
   const { updatePlace } = useListings();
   const [name, setName] = useState(outlet.name);
@@ -28,7 +26,7 @@ export function PlaceEditor({ outlet }: { outlet: Outlet }) {
   const [whatsapp, setWhatsapp] = useState(outlet.place.whatsapp);
   const [band, setBand] = useState(outlet.place.priceBand);
   const [tags, setTags] = useState<string[]>(outlet.place.tags);
-  const lock = { disabled: suspended, title: suspended ? LOCKED_REASON : undefined };
+  const lock = useLock('place.edit');
   const liveOffer = offers.find((o) => o.outletId === outlet.id && o.status === 'active');
   const cover = IMG[outlet.place.photos[0] ?? 0];
 

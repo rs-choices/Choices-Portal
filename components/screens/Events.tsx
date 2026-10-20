@@ -3,15 +3,14 @@
 import { useState } from 'react';
 import { BranchFilter, useInBranch } from '@/components/listings/shared';
 import { useListings } from '@/components/portal/ListingsProvider';
-import { useMessages } from '@/components/portal/MessagesProvider';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { IconButton } from '@/components/ui/IconButton';
 import { IMG } from '@/lib/portal/data';
 import { fmtDate, fmtTime } from '@/lib/portal/format';
-import { LOCKED_REASON } from '@/lib/portal/messages';
 import { EVENT_STATUS, placeLabel, type EventListing } from '@/lib/portal/places';
+import { useLock } from '@/components/portal/useLock';
 
 const WEEKDAY = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long' });
 export const eventWhen = (e: EventListing) => (e.weekly ? `Every ${WEEKDAY(e.date)} · ${fmtTime(e.time)}` : `${fmtDate(e.date)} · ${fmtTime(e.time)}`);
@@ -19,11 +18,10 @@ export const eventWhen = (e: EventListing) => (e.weekly ? `Every ${WEEKDAY(e.dat
 // Events across all branches. Each one is its own listing on top of a place.
 export function Events() {
   const { events, outlets, branches, openEventForm, setEventStatus } = useListings();
-  const { suspended } = useMessages();
   const inBranch = useInBranch();
   const [branchId, setBranchId] = useState('');
   const list = events.filter((e) => inBranch(e.outletId, branchId));
-  const lock = { disabled: suspended, title: suspended ? LOCKED_REASON : undefined };
+  const lock = useLock('listings.manage');
 
   return (
     <section className="flex flex-col gap-5">
@@ -50,8 +48,8 @@ export function Events() {
                   {e.price ? `AED ${e.price}` : 'Free'} · {e.left} of {e.spots} spots left
                 </div>
               </div>
-              <div className="flex flex-wrap gap-1.5" title={suspended ? LOCKED_REASON : undefined}>
-                {e.status !== 'ended' && e.status !== 'cancelled' && <IconButton icon="edit" title="Edit" aria-label="Edit" onClick={() => openEventForm(e)} disabled={suspended} />}
+              <div className="flex flex-wrap gap-1.5" title={lock.title}>
+                {e.status !== 'ended' && e.status !== 'cancelled' && <IconButton icon="edit" title="Edit" aria-label="Edit" onClick={() => openEventForm(e)} disabled={lock.disabled} />}
                 {live && (
                   <Button variant="secondary" size="xs" onClick={() => setEventStatus(e.id, 'soldout')} {...lock}>
                     Mark sold out

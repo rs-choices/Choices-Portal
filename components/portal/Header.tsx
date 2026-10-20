@@ -3,11 +3,24 @@
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { LOCKED_REASON } from '@/lib/portal/messages';
+import { ROLE_REASON, type Permission } from '@/lib/portal/roles';
 import { ACTION_TOAST, type SectionId } from '@/lib/portal/sections';
 import { useListings } from './ListingsProvider';
 import { useMessages } from './MessagesProvider';
 import { NotificationBell } from './NotificationBell';
 import { usePortal } from './PortalProvider';
+
+const ACTION_PERMISSION: Partial<Record<SectionId, Permission>> = {
+  dashboard: 'listings.manage',
+  offers: 'listings.manage',
+  events: 'listings.manage',
+  activities: 'listings.manage',
+  branches: 'branch.add',
+  bookings: 'bookings.manage',
+  customers: 'customers.export',
+  analytics: 'analytics.view',
+  billing: 'billing.invoices',
+};
 
 export function Header({
   section,
@@ -22,12 +35,16 @@ export function Header({
   onMenu: () => void;
   highlight: 'btn' | 'bell' | null;
 }) {
-  const { openOfferForm, showToast, tour } = usePortal();
+  const { openOfferForm, showToast, tour, can } = usePortal();
   const { suspended, openSupportChat } = useMessages();
   const { openEventForm, openActivityForm, setAddBranchOpen } = useListings();
   const newOffer = section === 'dashboard' || section === 'offers';
   // While suspended, actions that change what clients see are locked.
-  const locked = suspended && (newOffer || section === 'bookings' || section === 'branches' || section === 'events' || section === 'activities');
+  const suspendLocked = suspended && (newOffer || section === 'bookings' || section === 'branches' || section === 'events' || section === 'activities');
+  // Each page's main action needs a permission (docs/domain/roles-and-permissions.md).
+  const need = ACTION_PERMISSION[section];
+  const roleLocked = !!need && !can(need);
+  const locked = suspendLocked || roleLocked;
 
   const onAction = () => {
     if (newOffer) openOfferForm();
@@ -66,7 +83,7 @@ export function Header({
         size="header"
         onClick={onAction}
         disabled={locked}
-        title={locked ? LOCKED_REASON : undefined}
+        title={suspendLocked ? LOCKED_REASON : roleLocked ? ROLE_REASON : undefined}
         className={`shrink-0 ${highlight === 'btn' ? 'shadow-tour-ring' : ''}`}
       >
         {(newOffer || section === 'branches' || section === 'events' || section === 'activities') && <Icon name="plus" size={18} stroke={2.2} />}

@@ -58,3 +58,16 @@ export function EmptyState({ onCta }: { onCta: () => void }) {
     </Card>
   );
 }
+
+// A page the signed-in role can't use (for example Billing for staff).
+export function RoleBlocked() {
+  return (
+    <Card className="flex flex-col items-center gap-3.5 px-8 py-14 text-center">
+      <div className="grid size-16 place-items-center rounded-full bg-brand-purple/8 text-brand-purple">
+        <Icon name="lock" size={30} />
+      </div>
+      <h2 className="m-0 text-xl font-bold text-brand-purple">Not available for your role</h2>
+      <div className="max-w-[420px] leading-normal text-fg-muted">Ask the business owner if you need access.</div>
+    </Card>
+  );
+}
