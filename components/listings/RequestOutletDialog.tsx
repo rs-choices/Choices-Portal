@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input, Label, Select } from '@/components/ui/Field';
 import { OUTLET_TYPES, type Branch, type OutletType } from '@/lib/portal/places';
+import { useLock } from '@/components/portal/useLock';
 
 // A big branch can hold several places (a hotel's café and rooftop
 // restaurant). Each extra one is requested here and approved by the team.
 export function RequestOutletDialog({ branch, onClose }: { branch: Branch | null; onClose: () => void }) {
   const { requestOutlet } = useListings();
+  const lock = useLock('branch.add');
   const [name, setName] = useState('');
   const [type, setType] = useState<OutletType>('Food & Beverage');
 
@@ -31,7 +33,8 @@ export function RequestOutletDialog({ branch, onClose }: { branch: Branch | null
           </Button>
           <Button
             size="md"
-            disabled={!name.trim()}
+            disabled={lock.disabled || !name.trim()}
+            title={lock.title}
             onClick={() => {
               if (branch) requestOutlet(branch.id, { name: name.trim(), type });
               close();

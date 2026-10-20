@@ -15,6 +15,7 @@ import { Segmented } from '@/components/ui/Segmented';
 import { BOOKINGS, CUSTOMERS, REVIEWS, VISIT_HISTORY } from '@/lib/portal/data';
 import { CLIENT_REPORT_REASONS, REVIEW_REPORT_REASONS } from '@/lib/portal/messages';
 import { firstName } from '@/lib/portal/format';
+import { useRoleLock } from '@/components/portal/useLock';
 
 type Filter = 'all' | 'new' | 'returning' | 'active';
 const FILTERS = [
@@ -27,6 +28,8 @@ const FILTERS = [
 const COLS = 'grid grid-cols-[minmax(200px,2.2fr)_repeat(4,minmax(70px,1fr))] gap-3 px-5';
 
 export function Customers() {
+  const reportLock = useRoleLock('reports.create');
+  const replyLock = useRoleLock('reviews.reply');
   const { showToast } = usePortal();
   const { report, reportedReviewIds, reportedCustomerIds } = useMessages();
   const [reporting, setReporting] = useState<{ kind: 'review'; id: number } | { kind: 'client'; id: number } | null>(null);
@@ -134,7 +137,7 @@ export function Customers() {
             {reportedCustomerIds.includes(selected.id) ? (
               <span className="self-start text-[13px] font-semibold text-fg-subtle">Reported</span>
             ) : (
-              <TextButton className="self-start text-[13px]" onClick={() => setReporting({ kind: 'client', id: selected.id })}>
+              <TextButton className="self-start text-[13px] disabled:cursor-not-allowed disabled:opacity-50" onClick={() => setReporting({ kind: 'client', id: selected.id })} {...reportLock}>
                 Report client
               </TextButton>
             )}
@@ -170,7 +173,7 @@ export function Customers() {
               {reportedReviewIds.includes(r.id) ? (
                 <span className="self-start text-xs font-semibold text-fg-subtle">Reported</span>
               ) : (
-                <TextButton className="self-start text-xs" onClick={() => setReporting({ kind: 'review', id: r.id })}>
+                <TextButton className="self-start text-xs disabled:cursor-not-allowed disabled:opacity-50" onClick={() => setReporting({ kind: 'review', id: r.id })} {...reportLock}>
                   Report review
                 </TextButton>
               )}
@@ -185,6 +188,7 @@ export function Customers() {
                   variant="secondary"
                   size="sm"
                   className="self-start"
+                  {...replyLock}
                   onClick={() => {
                     setReplyOpen(r.id);
                     setReplyText('');

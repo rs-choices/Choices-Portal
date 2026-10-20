@@ -13,6 +13,7 @@ import { IMG, TODAY, VENUE, type OfferType } from '@/lib/portal/data';
 import { fmtDate, fmtTime } from '@/lib/portal/format';
 import { useListings } from './ListingsProvider';
 import { usePortal } from './PortalProvider';
+import { useLock } from '@/components/portal/useLock';
 
 const TYPES: OfferType[] = ['Discount', 'Set menu', 'Happy hour'];
 
@@ -20,6 +21,7 @@ const TYPES: OfferType[] = ['Discount', 'Set menu', 'Happy hour'];
 export function OfferFormModal() {
   const { form: f, setFormField: set, closeOfferForm, saveOfferForm } = usePortal();
   const { canPublish } = useListings();
+  const lock = useLock('listings.manage');
   const [error, setError] = useState(false);
   if (!f) return null;
   const publishable = !f.outletId || canPublish(f.outletId);
@@ -118,10 +120,10 @@ export function OfferFormModal() {
           </div>
 
           <div className="flex flex-wrap justify-end gap-2.5 pt-1.5">
-            <Button variant="secondary" onClick={() => save(true)}>
+            <Button variant="secondary" onClick={() => save(true)} {...lock}>
               Save as draft
             </Button>
-            <Button className="px-[26px]" onClick={() => save(false)} disabled={!publishable} title={publishable ? undefined : NOT_VERIFIED}>
+            <Button className="px-[26px]" onClick={() => save(false)} disabled={lock.disabled || !publishable} title={lock.title ?? (publishable ? undefined : NOT_VERIFIED)}>
               Publish offer
             </Button>
           </div>

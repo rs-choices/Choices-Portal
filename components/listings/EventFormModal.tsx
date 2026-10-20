@@ -8,11 +8,13 @@ import { FieldError, Input, Label, Textarea } from '@/components/ui/Field';
 import { Toggle } from '@/components/ui/Toggle';
 import { NOT_VERIFIED, PhotoPicker } from './shared';
 import { WherePicker } from './WherePicker';
+import { useLock } from '@/components/portal/useLock';
 
 // New / edit event: where it happens first (branch, then outlet when there
 // are several), then the details. An event is its own listing on top of a place.
 export function EventFormModal() {
   const { eventForm, closeEventForm, saveEvent, canPublish } = useListings();
+  const lock = useLock('listings.manage');
   const [draft, setDraft] = useState<EventDraft | null>(null);
   const [error, setError] = useState('');
   // Start from the form the provider opened, each time it opens.
@@ -39,10 +41,10 @@ export function EventFormModal() {
       onClose={closeEventForm}
       footer={
         <>
-          <Button variant="secondary" size="md" onClick={() => save(false)}>
+          <Button variant="secondary" size="md" onClick={() => save(false)} {...lock}>
             Save draft
           </Button>
-          <Button size="md" onClick={() => save(true)} disabled={!publishable} title={publishable ? undefined : NOT_VERIFIED}>
+          <Button size="md" onClick={() => save(true)} disabled={lock.disabled || !publishable} title={lock.title ?? (publishable ? undefined : NOT_VERIFIED)}>
             Publish
           </Button>
         </>
