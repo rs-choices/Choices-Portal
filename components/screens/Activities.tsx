@@ -3,23 +3,21 @@
 import { useState } from 'react';
 import { BranchFilter, useInBranch } from '@/components/listings/shared';
 import { useListings } from '@/components/portal/ListingsProvider';
-import { useMessages } from '@/components/portal/MessagesProvider';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { IconButton } from '@/components/ui/IconButton';
 import { IMG } from '@/lib/portal/data';
-import { LOCKED_REASON } from '@/lib/portal/messages';
 import { ACTIVITY_STATUS, placeLabel } from '@/lib/portal/places';
+import { useLock } from '@/components/portal/useLock';
 
 // Activities across all branches. Each one is its own listing on top of a place.
 export function Activities() {
   const { activities, outlets, branches, openActivityForm, setActivityStatus, canPublish } = useListings();
-  const { suspended } = useMessages();
   const inBranch = useInBranch();
   const [branchId, setBranchId] = useState('');
   const list = activities.filter((a) => inBranch(a.outletId, branchId));
-  const lock = { disabled: suspended, title: suspended ? LOCKED_REASON : undefined };
+  const lock = useLock('listings.manage');
 
   return (
     <section className="flex flex-col gap-5">
@@ -45,14 +43,14 @@ export function Activities() {
                   {a.duration} · {a.price ? `AED ${a.price}` : 'Free'} · {a.minAge ? `Ages ${a.minAge}+` : 'All ages'}
                 </div>
               </div>
-              <div className="flex flex-wrap gap-1.5" title={suspended ? LOCKED_REASON : undefined}>
-                <IconButton icon="edit" title="Edit" aria-label="Edit" onClick={() => openActivityForm(a)} disabled={suspended} />
+              <div className="flex flex-wrap gap-1.5" title={lock.title}>
+                <IconButton icon="edit" title="Edit" aria-label="Edit" onClick={() => openActivityForm(a)} disabled={lock.disabled} />
                 {a.status === 'published' ? (
                   <Button variant="secondary" size="xs" onClick={() => setActivityStatus(a.id, 'unpublished')} {...lock}>
                     Unpublish
                   </Button>
                 ) : (
-                  <Button variant="secondary" size="xs" onClick={() => setActivityStatus(a.id, 'published')} disabled={suspended || !canPublish(a.outletId)}>
+                  <Button variant="secondary" size="xs" onClick={() => setActivityStatus(a.id, 'published')} disabled={lock.disabled || !canPublish(a.outletId)}>
                     Publish
                   </Button>
                 )}

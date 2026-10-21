@@ -10,6 +10,7 @@ import { Segmented } from '@/components/ui/Segmented';
 import { Toggle } from '@/components/ui/Toggle';
 import { TEAM, VENUE } from '@/lib/portal/data';
 import { Avatar } from '@/components/ui/Avatar';
+import { useRoleLock } from '@/components/portal/useLock';
 
 const NOTIFICATIONS = [
   ['booking', 'New booking', 'When a customer books or claims an offer'],
@@ -19,7 +20,8 @@ const NOTIFICATIONS = [
 ] as const;
 
 export function Settings() {
-  const { showToast } = usePortal();
+  const { showToast, can, user } = usePortal();
+  const detailsLock = useRoleLock('business.details');
   const [team, setTeam] = useState(TEAM);
   const [invEmail, setInvEmail] = useState('');
   const [invRole, setInvRole] = useState<'Manager' | 'Staff'>('Staff');
@@ -47,37 +49,39 @@ export function Settings() {
         <CardTitle>Business details</CardTitle>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
           <Label label="Business name">
-            <Input defaultValue={VENUE} />
+            <Input defaultValue={VENUE} disabled={detailsLock.disabled} title={detailsLock.title} />
           </Label>
           <Label label="Logo">
-            <Button variant="secondary" size="sm" className="self-start">
+            <Button variant="secondary" size="sm" className="self-start" {...detailsLock}>
               Upload logo
             </Button>
           </Label>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
           <Label label="Business email">
-            <Input defaultValue="hello@qahwahouse.ae" />
+            <Input defaultValue="hello@qahwahouse.ae" disabled={detailsLock.disabled} title={detailsLock.title} />
           </Label>
           <Label label="Instagram">
-            <Input defaultValue="instagram.com/qahwahouse" />
+            <Input defaultValue="instagram.com/qahwahouse" disabled={detailsLock.disabled} title={detailsLock.title} />
           </Label>
         </div>
-        <span className="text-[13px] text-fg-muted">Each branch&apos;s photos, hours and WhatsApp are on Branches.</span>
+        <span className="text-[13px] text-fg-muted">
+          {detailsLock.disabled ? 'Only the business owner can change the business details. ' : ''}Each branch&apos;s photos, hours and WhatsApp are on Branches.
+        </span>
       </Card>
 
       <Card className="flex flex-col gap-3.5 p-6">
         <CardTitle>Your account</CardTitle>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
           <Label label="Full name">
-            <Input defaultValue="Layla Haddad" />
+            <Input defaultValue={user.name} />
           </Label>
           <Label label="Mobile">
             <Input defaultValue="+971 50 123 4567" />
           </Label>
         </div>
         <Label label="Email">
-          <Input defaultValue="layla@qahwahouse.ae" />
+          <Input defaultValue={user.email} />
         </Label>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
           <Label label="Current password">
@@ -104,22 +108,23 @@ export function Settings() {
             <span className="rounded-pill bg-surface-purple px-3 py-1.5 text-[13px] font-semibold text-brand-purple">{m.role}</span>
           </div>
         ))}
-        <div className="flex flex-wrap items-center gap-2 border-t border-line-soft pt-3.5">
-          <Input size="sm" value={invEmail} onChange={(e) => setInvEmail(e.target.value)} placeholder="colleague@qahwahouse.ae" className="w-auto flex-[1_1_180px]" />
-          <Segmented
-            options={[
-              ['Manager', 'Manager'],
-              ['Staff', 'Staff'],
-            ]}
-            value={invRole}
-            onChange={setInvRole}
-            size="sm"
-          />
-          <Button size="md" className="px-[18px] py-[11px] text-[13px]" onClick={invite}>
-            Invite
-          </Button>
+        {can('team.staff') && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-line-soft pt-3.5">
+            <Input size="sm" value={invEmail} onChange={(e) => setInvEmail(e.target.value)} placeholder="colleague@qahwahouse.ae" className="w-auto flex-[1_1_180px]" />
+            <Segmented
+              options={can('team.managers') ? [['Manager', 'Manager'], ['Staff', 'Staff']] : [['Staff', 'Staff']]}
+              value={invRole}
+              onChange={setInvRole}
+              size="sm"
+            />
+            <Button size="md" className="px-[18px] py-[11px] text-[13px]" onClick={invite}>
+              Invite
+            </Button>
+          </div>
+        )}
+        <div className="text-xs leading-normal text-ink-muted">
+          Owners do everything, including billing and the business details. Managers run the places, events, activities, offers and the staff. Staff handle bookings and see the rest.
         </div>
-        <div className="text-xs leading-normal text-ink-muted">Managers can edit offers and see analytics. Staff can manage bookings and check customers in.</div>
       </Card>
 
       <Card className="flex flex-col gap-1 p-6">

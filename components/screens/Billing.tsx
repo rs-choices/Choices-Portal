@@ -1,5 +1,8 @@
 'use client';
 
+import { RoleBlocked } from '@/components/portal/States';
+import { useRoleLock } from '@/components/portal/useLock';
+
 import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Badge } from '@/components/ui/Badge';
@@ -9,6 +12,12 @@ import { Icon } from '@/components/ui/Icon';
 import { INVOICES, PLAN_PRICE, PLANS } from '@/lib/portal/data';
 
 export function Billing() {
+  const { can } = usePortal();
+  return can('billing.invoices') ? <BillingPage /> : <RoleBlocked />;
+}
+
+function BillingPage() {
+  const manageLock = useRoleLock('billing.manage');
   const { plan, setPlan, showToast } = usePortal();
   const { flags } = useMessages();
   const failed = flags.includes('payment-failed');
@@ -47,7 +56,7 @@ export function Billing() {
               <div className="text-xs text-ink-muted">Expires 08/28 · Emirates NBD</div>
             </div>
           </div>
-          <Button variant="secondary" size="sm" className="self-start">
+          <Button variant="secondary" size="sm" className="self-start" {...manageLock}>
             Update card
           </Button>
         </Card>
@@ -78,7 +87,7 @@ export function Billing() {
               {current ? (
                 <div className="rounded-pill bg-fill-soft p-[13px] text-center font-button font-bold text-fg-subtle">Current plan</div>
               ) : (
-                <Button size="md" className="py-[13px]" onClick={() => pick(p.name)}>
+                <Button size="md" className="py-[13px]" onClick={() => pick(p.name)} {...manageLock}>
                   {p.name === 'Enterprise' ? 'Talk to sales' : `Switch to ${p.name}`}
                 </Button>
               )}
@@ -113,13 +122,15 @@ export function Billing() {
         </div>
       </Card>
 
-      <div className="text-[13px] text-ink-muted">
-        Want to stop?{' '}
-        <a href="#" className="font-semibold text-brand-purple hover:text-brand-peach">
-          Cancel your plan
-        </a>
-        . Your listing stays live until the end of your billing month.
-      </div>
+      {!manageLock.disabled && (
+        <div className="text-[13px] text-ink-muted">
+          Want to stop?{' '}
+          <a href="#" className="font-semibold text-brand-purple hover:text-brand-peach">
+            Cancel your plan
+          </a>
+          . Your listing stays live until the end of your billing month.
+        </div>
+      )}
     </section>
   );
 }

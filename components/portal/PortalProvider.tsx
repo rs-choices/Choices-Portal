@@ -1,9 +1,10 @@
 'use client';
 
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { BOOKINGS, OFFERS, TODAY, type Booking, type BookingStatus, type Offer, type OfferStatus, type Plan } from '@/lib/portal/data';
 import { fmtDate, fmtTime } from '@/lib/portal/format';
+import { can as roleCan, demoUser, parseRole, type Permission, type Role } from '@/lib/portal/roles';
 
 // Client-side state shared by every page, mounted in the root layout so
 // onboarding can hand over to the dashboard tour. With no backend yet, offers,
@@ -19,6 +20,9 @@ export type OfferTab = 'active' | 'scheduled' | 'draft' | 'expired';
 type Checklist = { profile: boolean; photos: boolean; offer: boolean };
 
 type Ctx = {
+  role: Role;
+  user: ReturnType<typeof demoUser>;
+  can: (p: Permission) => boolean;
   plan: Plan;
   setPlan: (p: Plan) => void;
   offers: Offer[];
@@ -64,6 +68,15 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
   const [tour, setTour] = useState<number | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [role, setRole] = useState<Role>('Owner');
+
+  // Read the forced role (?role=) once, on first load, like ?account=. The
+  // provider stays mounted, so the role holds while the user navigates.
+  useEffect(() => {
+    const forced = parseRole(window.location.search);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time sync from the URL after hydration
+    if (forced !== 'Owner') setRole(forced);
+  }, []);
 
   const showToast = useCallback((m: string) => {
     clearTimeout(toastTimer.current);
@@ -102,6 +115,9 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   };
 
   const value: Ctx = {
+    role,
+    user: demoUser(role),
+    can: (p) => roleCan(role, p),
     plan,
     setPlan,
     offers,

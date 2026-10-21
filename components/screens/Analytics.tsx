@@ -1,5 +1,7 @@
 'use client';
 
+import { RoleBlocked } from '@/components/portal/States';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePortal } from '@/components/portal/PortalProvider';
@@ -27,6 +29,11 @@ const HEAT = DAYS.map((day, di) => ({
 }));
 
 export function Analytics() {
+  const { can } = usePortal();
+  return can('analytics.view') ? <AnalyticsPage /> : <RoleBlocked />;
+}
+
+function AnalyticsPage() {
   const { plan, offers } = usePortal();
   const [range, setRange] = useState<Range>('7d');
   const d = SERIES[range];
