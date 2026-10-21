@@ -124,7 +124,7 @@ export function PortalProvider({ children }: { children: ReactNode }) {
     checklist,
     completeChecklist: (key) => setChecklist((c) => ({ ...c, [key]: true })),
     finishOnboarding: () => {
-      setChecklist({ profile: true, photos: true, offer: true });
+      setChecklist({ profile: false, photos: false, offer: false });
       setTour(0);
       router.push('/dashboard');
     },
