@@ -15,6 +15,8 @@ export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () 
   const [area, setArea] = useState('');
   const [address, setAddress] = useState('');
   const [licence, setLicence] = useState('');
+  const [opens, setOpens] = useState('09:00');
+  const [closes, setCloses] = useState('22:00');
   const ready = name.trim() && address.trim() && licence.trim();
 
   const close = () => {
@@ -22,6 +24,8 @@ export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () 
     setArea('');
     setAddress('');
     setLicence('');
+    setOpens('09:00');
+    setCloses('22:00');
     onClose();
   };
 
@@ -40,7 +44,7 @@ export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () 
             disabled={lock.disabled || !ready}
             title={lock.title}
             onClick={() => {
-              addBranch({ name: name.trim(), area: area.trim() || name.trim(), address: address.trim(), licence: licence.trim() });
+              addBranch({ name: name.trim(), area: area.trim() || name.trim(), address: address.trim(), licence: licence.trim(), open: opens, close: closes });
               close();
             }}
           >
@@ -61,7 +65,15 @@ export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () 
       <Label label="Trade licence number">
         <Input value={licence} onChange={(e) => setLicence(e.target.value)} placeholder="DED-000000" />
       </Label>
-      <p className="m-0 text-[13px] text-fg-muted">The Choices team verifies a new branch within two working days. You can prepare its place, events and offers meanwhile.</p>
+      <div className="grid grid-cols-2 gap-4">
+        <Label label="Opens">
+          <Input type="time" value={opens} onChange={(e) => setOpens(e.target.value)} />
+        </Label>
+        <Label label="Closes">
+          <Input type="time" value={closes} onChange={(e) => setCloses(e.target.value)} />
+        </Label>
+      </div>
+      <p className="m-0 text-[13px] text-fg-muted">The Choices team verifies a new branch within two working days. You can set different hours per day later. Events, activities and offers can be added once it is verified.</p>
     </Dialog>
   );
 }
