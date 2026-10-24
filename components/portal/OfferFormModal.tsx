@@ -9,7 +9,7 @@ import { IconButton } from '@/components/ui/IconButton';
 import { PhoneFrame, StatusBar } from '@/components/ui/PhoneFrame';
 import { NOT_VERIFIED } from '@/components/listings/shared';
 import { WherePicker } from '@/components/listings/WherePicker';
-import { IMG, TODAY, VENUE, type OfferType } from '@/lib/portal/data';
+import { IMG, TODAY, BUSINESS_NAME, type OfferType } from '@/lib/portal/data';
 import { fmtDate, fmtTime } from '@/lib/portal/format';
 import { useListings } from './ListingsProvider';
 import { usePortal } from './PortalProvider';
@@ -148,7 +148,7 @@ export function OfferFormModal() {
               <span className="absolute top-3 right-3 rounded-pill bg-surface/90 px-2.5 py-[5px] text-[11px] font-bold text-brand-purple">{f.type}</span>
               <div className="absolute right-3.5 bottom-3.5 left-3.5 flex flex-col gap-1 text-inverse">
                 <span className="text-[17px] leading-tight font-bold">{f.title || 'Your offer title'}</span>
-                <span className="text-xs opacity-90">{VENUE} · 0.4 km</span>
+                <span className="text-xs opacity-90">{BUSINESS_NAME} · 0.4 km</span>
               </div>
             </div>
             <div className="flex flex-col gap-2.5 px-4 py-3.5">
