@@ -70,7 +70,7 @@ export type TeamMember = {
   status: 'Active' | 'Invited';
 };
 
-export const VENUE = 'Qahwa House';
+export const BUSINESS_NAME = 'Qahwa House';
 export const TODAY = '2026-09-23';
 export const USER = { name: 'Layla Haddad', role: 'Owner', initials: 'LH' };
 

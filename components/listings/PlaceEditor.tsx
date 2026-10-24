@@ -11,7 +11,7 @@ import { Input, Label, Textarea } from '@/components/ui/Field';
 import { Icon, Star } from '@/components/ui/Icon';
 import { PhoneFrame, StatusBar } from '@/components/ui/PhoneFrame';
 import { Segmented } from '@/components/ui/Segmented';
-import { IMG, TAGS, VENUE } from '@/lib/portal/data';
+import { IMG, TAGS, BUSINESS_NAME } from '@/lib/portal/data';
 import { PRICE_BANDS, type Outlet } from '@/lib/portal/places';
 import { useLock } from '@/components/portal/useLock';
 
@@ -118,7 +118,7 @@ export function PlaceEditor({ outlet }: { outlet: Outlet }) {
           </div>
           <div className="flex flex-col gap-2.5 overflow-hidden p-4">
             <div>
-              <div className="text-[19px] font-bold text-brand-purple">{outlet.isDefault ? VENUE : `${name} · ${VENUE}`}</div>
+              <div className="text-[19px] font-bold text-brand-purple">{outlet.isDefault ? BUSINESS_NAME : `${name} · ${BUSINESS_NAME}`}</div>
               <div className="text-xs text-ink-muted">{outlet.type} · 0.4 km</div>
             </div>
             <div className="flex items-center gap-2.5 text-xs">
