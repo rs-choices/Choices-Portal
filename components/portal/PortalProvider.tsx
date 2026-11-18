@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { BOOKINGS, OFFERS, TODAY, type Booking, type BookingStatus, type Offer, type OfferStatus, type Plan } from '@/lib/portal/data';
+import { buildBookings, OFFERS, TODAY, bookingTime, sortKey, type Booking, type BookingStatus, type Offer, type OfferStatus, type Plan } from '@/lib/portal/data';
 import { fmtDate, fmtTime } from '@/lib/portal/format';
 import { can as roleCan, demoUser, parseRole, type Permission, type Role } from '@/lib/portal/roles';
 
@@ -32,6 +32,10 @@ type Ctx = {
   setOfferTab: (t: OfferTab) => void;
   bookings: Booking[];
   setBookingStatus: (id: number, status: BookingStatus, message: string) => void;
+  // A manual booking staff typed in. A walk-in is checked in at once.
+  addBooking: (b: Omit<Booking, 'id' | 't' | 'time' | 'offer' | 'status'> & { at: string }) => Booking;
+  addBookingOpen: boolean;
+  setAddBookingOpen: (v: boolean) => void;
   checklist: Checklist;
   completeChecklist: (key: keyof Checklist) => void;
   finishOnboarding: () => void;
@@ -62,7 +66,8 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   const [plan, setPlan] = useState<Plan>('Starter');
   const [offers, setOffers] = useState(OFFERS);
   const [offerTab, setOfferTab] = useState<OfferTab>('active');
-  const [bookings, setBookings] = useState(BOOKINGS);
+  const [bookings, setBookings] = useState(buildBookings);
+  const [addBookingOpen, setAddBookingOpen] = useState(false);
   const [checklist, setChecklist] = useState<Checklist>({ profile: true, photos: false, offer: false });
   const [form, setForm] = useState<OfferDraft | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -137,6 +142,14 @@ export function PortalProvider({ children }: { children: ReactNode }) {
       setBookings((all) => all.map((b) => (b.id === id ? { ...b, status } : b)));
       showToast(message);
     },
+    addBooking: ({ at, ...b }) => {
+      const booking: Booking = { ...b, id: Date.now(), t: sortKey(at), time: bookingTime(at), offer: '—', status: b.source === 'walk-in' ? 'checkedin' : 'confirmed' };
+      setBookings((all) => [...all, booking]);
+      showToast(`${b.source === 'walk-in' ? 'Walk-in' : 'Manual booking'} added for ${b.party} at ${booking.time}.`);
+      return booking;
+    },
+    addBookingOpen,
+    setAddBookingOpen,
     checklist,
     completeChecklist: (key) => setChecklist((c) => ({ ...c, [key]: true })),
     finishOnboarding: () => {
