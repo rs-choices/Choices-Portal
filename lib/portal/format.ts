@@ -39,3 +39,23 @@ export function chartPoints(a: number[], top = 170) {
 }
 
 export const chartArea = (a: number[]) => 'M0,200 L' + chartPoints(a).split(' ').join(' L') + ' L600,200 Z';
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// Today's local date as 'YYYY-MM-DD'.
+export function todayISO(d = new Date()) {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+// Now as 'HH:MM', local time.
+export const nowHHMM = (d = new Date()) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+// '2026-11-19' + 1 -> '2026-11-20'.
+export function addDays(iso: string, n: number) {
+  const x = new Date(iso + 'T00:00:00');
+  x.setDate(x.getDate() + n);
+  return todayISO(x);
+}
+
+// 0 = Monday ... 6 = Sunday.
+export const weekdayIndex = (iso: string) => (new Date(iso + 'T00:00:00').getDay() + 6) % 7;

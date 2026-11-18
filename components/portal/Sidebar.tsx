@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { BUSINESS_NAME } from '@/lib/portal/data';
 import { SECTIONS, sectionHref } from '@/lib/portal/sections';
+import { NEW_MARK } from '@/lib/portal/reviewMark';
 import { useListings } from './ListingsProvider';
 import { usePortal } from './PortalProvider';
 
@@ -20,7 +21,8 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
   const { plan, bookings, user, can } = usePortal();
   const { branches } = useListings();
   const [userOpen, setUserOpen] = useState(false);
-  const pending = bookings.filter((b) => b.status === 'requested').length;
+  const { visibleBranches } = useListings();
+  const pending = bookings.filter((b) => b.status === 'requested' && visibleBranches.some((v) => v.id === b.branchId)).length;
 
   return (
     <>
@@ -58,7 +60,7 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
                 href={sectionHref(s.id)}
                 title={s.label}
                 onClick={onClose}
-                className={`relative flex h-11 items-center gap-3 rounded-md px-3.5 text-sm font-semibold lg:justify-center lg:px-0 xl:justify-start xl:px-3.5 ${
+                className={`relative flex h-11 items-center gap-3 rounded-md px-3.5 text-sm font-semibold lg:justify-center lg:px-0 xl:justify-start xl:px-3.5 ${s.id === 'hours-menus' ? NEW_MARK : ''} ${
                   active ? 'bg-brand-purple text-inverse hover:text-inverse' : 'text-fg-soft hover:bg-brand-purple/6 hover:text-fg-soft'
                 }`}
               >

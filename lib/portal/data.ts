@@ -40,7 +40,14 @@ export type Booking = {
   offer: string;
   status: BookingStatus;
   phone: string;
+  date: string; // 'YYYY-MM-DD'
+  branchId: string;
+  source: BookingSource;
+  note?: string;
 };
+
+// Where a booking came from: the app, or a manual booking staff typed in.
+export type BookingSource = 'app' | 'phone' | 'walk-in' | 'other';
 
 export type Customer = {
   id: number;
@@ -110,17 +117,61 @@ export const OFFERS: Offer[] = [
   { id: 12, outletId: 'o-mar-lobby', title: 'Back-to-school breakfast', type: 'Set menu', deal: 'AED 59', desc: '', window: 'Weekdays · 7–9 AM', dates: 'Ended 14 Sep', views: 1190, claims: 64, img: 1, status: 'expired', sd: '2026-09-01', st: '07:00', ed: '2026-09-14', et: '09:00', red: 100 },
 ];
 
-export const BOOKINGS: Booking[] = [
-  { id: 1, time: '8:15 AM', t: 815, name: 'Omar Khalid', party: 2, offer: 'Spanish latte 2-for-1', status: 'checkedin', phone: '+971 50 214 7781' },
-  { id: 2, time: '9:00 AM', t: 900, name: 'Sara Nasser', party: 1, offer: 'Work-from-café day pass', status: 'checkedin', phone: '+971 55 902 1146' },
-  { id: 3, time: '9:45 AM', t: 945, name: 'Daniel Rossi', party: 2, offer: '—', status: 'noshow', phone: '+971 52 310 8820' },
-  { id: 4, time: '11:30 AM', t: 1130, name: 'Fatima Al Mansoori', party: 2, offer: 'Breakfast for two', status: 'confirmed', phone: '+971 50 667 0932' },
-  { id: 5, time: '12:15 PM', t: 1215, name: 'James Carter', party: 4, offer: '—', status: 'confirmed', phone: '+971 58 145 2290' },
-  { id: 6, time: '1:00 PM', t: 1300, name: 'Aisha Rahman', party: 3, offer: 'Work-from-café day pass', status: 'requested', phone: '+971 56 778 4410' },
-  { id: 7, time: '5:30 PM', t: 1730, name: 'Noura Al Suwaidi', party: 6, offer: 'Sunset terrace set menu', status: 'requested', phone: '+971 50 881 2037' },
-  { id: 8, time: '6:00 PM', t: 1800, name: 'Arjun Mehta', party: 2, offer: 'Mocktail happy hour', status: 'confirmed', phone: '+971 55 430 6618' },
-  { id: 9, time: '7:00 PM', t: 1900, name: 'Hessa Al Falasi', party: 4, offer: 'Sunset terrace set menu', status: 'cancelled', phone: '+971 52 509 7734' },
+// Sample bookings around today, across the verified branches (Downtown is
+// still waiting for verification, so it has none). Day 0 is today.
+type Row = [day: number, branchId: string, at: string, name: string, party: number, offer: string, status: BookingStatus, phone: string, source: BookingSource];
+const ROWS: Row[] = [
+  [-1, 'b-jum', '09:30', 'Rashid Mansour', 2, '—', 'checkedin', '+971 50 118 2290', 'app'],
+  [-1, 'b-mar', '20:00', 'Leila Karam', 4, 'Sunset terrace set menu', 'noshow', '+971 55 300 7781', 'app'],
+  [0, 'b-jum', '08:15', 'Omar Khalid', 2, 'Spanish latte 2-for-1', 'checkedin', '+971 50 214 7781', 'app'],
+  [0, 'b-jum', '09:00', 'Sara Nasser', 1, 'Work-from-café day pass', 'checkedin', '+971 55 902 1146', 'walk-in'],
+  [0, 'b-jum', '09:45', 'Daniel Rossi', 2, '—', 'noshow', '+971 52 310 8820', 'app'],
+  [0, 'b-jum', '11:30', 'Fatima Al Mansoori', 2, 'Breakfast for two', 'confirmed', '+971 50 667 0932', 'app'],
+  [0, 'b-mar', '12:15', 'James Carter', 4, '—', 'confirmed', '+971 58 145 2290', 'phone'],
+  [0, 'b-jum', '13:00', 'Aisha Rahman', 3, 'Work-from-café day pass', 'requested', '+971 56 778 4410', 'app'],
+  [0, 'b-mar', '17:30', 'Noura Al Suwaidi', 6, 'Sunset terrace set menu', 'requested', '+971 50 881 2037', 'app'],
+  [0, 'b-mar', '18:00', 'Arjun Mehta', 2, 'Mocktail happy hour', 'confirmed', '+971 55 430 6618', 'app'],
+  [0, 'b-mar', '19:00', 'Hessa Al Falasi', 4, 'Sunset terrace set menu', 'cancelled', '+971 52 509 7734', 'app'],
+  [1, 'b-jum', '10:00', 'Emma Walsh', 2, '—', 'confirmed', '+971 50 442 1180', 'app'],
+  [1, 'b-mar', '20:30', 'Khalid Aziz', 5, '—', 'requested', '+971 56 201 9934', 'app'],
+  [1, 'b-mar', '21:00', 'Tom Baker', 2, 'Sunset terrace set menu', 'confirmed', '+971 52 776 3301', 'phone'],
+  [2, 'b-jum', '08:30', 'Huda Rashed', 3, 'Breakfast for two', 'requested', '+971 55 650 2217', 'app'],
+  [2, 'b-jum', '12:00', 'Vikram Patel', 4, '—', 'confirmed', '+971 50 913 4475', 'app'],
+  [3, 'b-mar', '19:30', 'Mariam Saeed', 8, '—', 'confirmed', '+971 58 330 1902', 'phone'],
+  [4, 'b-jum', '09:00', 'Layla Haddad', 2, 'Spanish latte 2-for-1', 'confirmed', '+971 55 122 8840', 'app'],
+  [5, 'b-mar', '20:00', 'Ziad Khoury', 6, 'Sunset terrace set menu', 'confirmed', '+971 50 761 0035', 'app'],
 ];
+
+// 'HH:MM' -> 1330 (sort key) and '1:30 PM'.
+export const sortKey = (at: string) => Number(at.replace(':', ''));
+const label = (at: string) => {
+  const [h, m] = at.split(':').map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+};
+export const bookingTime = label;
+
+const iso = (offset: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+// Built when first used (in each environment) rather than at module load,
+// so a long-running server doesn't keep yesterday's dates.
+export const buildBookings = (): Booking[] =>
+  ROWS.map(([day, branchId, at, name, party, offer, status, phone, source], i) => ({
+  id: i + 1,
+  time: label(at),
+  t: sortKey(at),
+  name,
+  party,
+  offer,
+  status,
+  phone,
+  date: iso(day),
+  branchId,
+  source,
+}));
 
 export const CUSTOMERS: Customer[] = [
   { id: 1, name: 'Fatima Al Mansoori', area: 'Umm Suqeim', visits: 14, last: 'Today', claimed: 9, bookings: 12, seg: 'returning', since: 'Mar 2026' },

@@ -14,6 +14,10 @@ import { Segmented } from '@/components/ui/Segmented';
 import { IMG, TAGS, BUSINESS_NAME } from '@/lib/portal/data';
 import { PRICE_BANDS, type Outlet } from '@/lib/portal/places';
 import { useLock } from '@/components/portal/useLock';
+import { BranchHoursCards } from '@/components/hours/BranchHoursCards';
+import { useHours } from '@/components/portal/HoursProvider';
+import { useMounted } from '@/components/portal/useMounted';
+import { NEW_MARK } from '@/lib/portal/reviewMark';
 
 // The place clients see: one per outlet. For a small branch this is simply
 // "the branch"; a big branch has one per outlet. Remount it per outlet (key)
@@ -21,6 +25,12 @@ import { useLock } from '@/components/portal/useLock';
 export function PlaceEditor({ outlet }: { outlet: Outlet }) {
   const { offers } = usePortal();
   const { updatePlace } = useListings();
+  const { statusOf, menuOf } = useHours();
+  const mounted = useMounted();
+  // Hours and menus belong to the branch, shown on its main place only (no outlets in this work).
+  const branchDetails = outlet.isDefault;
+  const status = mounted && branchDetails ? statusOf(outlet.branchId) : null;
+  const hasMenu = branchDetails && !!menuOf(outlet.branchId);
   const [name, setName] = useState(outlet.name);
   const [description, setDescription] = useState(outlet.place.description);
   const [whatsapp, setWhatsapp] = useState(outlet.place.whatsapp);
@@ -90,21 +100,7 @@ export function PlaceEditor({ outlet }: { outlet: Outlet }) {
           </div>
         </Card>
 
-        <Card className="flex flex-col gap-1.5 p-6">
-          <CardTitle className="mb-2">Opening hours</CardTitle>
-          {outlet.place.hours.length === 0 && <div className="text-[13px] text-fg-muted">No opening hours yet.</div>}
-          {outlet.place.hours.map(([day, open, close]) => (
-            <div key={day} className="flex justify-between border-t border-line-faint py-[7px] text-[13px]">
-              <span className="font-semibold">{day}</span>
-              <span className="text-fg-soft">
-                {open} – {close}
-              </span>
-            </div>
-          ))}
-          <Button variant="secondary" size="sm" className="mt-2 self-start" {...lock}>
-            Edit hours
-          </Button>
-        </Card>
+        {branchDetails && <BranchHoursCards branchId={outlet.branchId} />}
       </div>
 
       <div className="sticky top-24 mx-auto flex flex-[0_1_330px] flex-col items-center gap-3">
@@ -128,6 +124,12 @@ export function PlaceEditor({ outlet }: { outlet: Outlet }) {
               </span>
               <span className="text-ink-muted">{PRICE_BANDS[band][1]} per person</span>
             </div>
+            {status && (
+              <div className={`flex items-center justify-between gap-2 text-xs ${NEW_MARK}`}>
+                <span className={`font-semibold ${status.open ? 'text-teal-ink' : 'text-peach-ink'}`}>{status.text}</span>
+                {hasMenu && <span className="rounded-pill border border-brand-purple px-2.5 py-[3px] text-[11px] font-bold text-brand-purple">Menu</span>}
+              </div>
+            )}
             <div className="flex flex-wrap gap-1.5">
               {tags.map((t) => (
                 <span key={t} className="rounded-pill bg-surface-muted px-2.5 py-[5px] text-[11px] font-semibold text-brand-purple">

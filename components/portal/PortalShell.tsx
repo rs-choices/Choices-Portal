@@ -7,6 +7,8 @@ import { EventFormModal } from '@/components/listings/EventFormModal';
 import { sectionFromPath } from '@/lib/portal/sections';
 import { AccountBanner } from './AccountBanner';
 import { Header } from './Header';
+import { HoursProvider } from '@/components/portal/HoursProvider';
+import { HoursForms } from '@/components/hours/HoursForms';
 import { ListingsProvider } from './ListingsProvider';
 import { MessagesProvider } from './MessagesProvider';
 import { OfferFormModal } from './OfferFormModal';
@@ -32,6 +34,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
   return (
     <MessagesProvider>
       <ListingsProvider>
+        <HoursProvider>
         <div className="flex min-h-screen bg-page text-sm text-fg">
           <Sidebar open={drawer} onClose={() => setDrawer(false)} highlight={hl === 'nav'} />
           <main className="flex min-w-0 flex-1 flex-col">
@@ -51,8 +54,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
           <OfferFormModal />
           <EventFormModal />
           <ActivityFormModal />
+          <HoursForms />
           <Toast />
         </div>
+        </HoursProvider>
       </ListingsProvider>
     </MessagesProvider>
   );
