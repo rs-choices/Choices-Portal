@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
-import { VENUE } from '@/lib/portal/data';
+import { BUSINESS_NAME } from '@/lib/portal/data';
 import { SECTIONS, sectionHref } from '@/lib/portal/sections';
+import { NEW_MARK } from '@/lib/portal/reviewMark';
 import { useListings } from './ListingsProvider';
 import { usePortal } from './PortalProvider';
 
@@ -20,7 +21,8 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
   const { plan, bookings, user, can } = usePortal();
   const { branches } = useListings();
   const [userOpen, setUserOpen] = useState(false);
-  const pending = bookings.filter((b) => b.status === 'requested').length;
+  const { visibleBranches } = useListings();
+  const pending = bookings.filter((b) => b.status === 'requested' && visibleBranches.some((v) => v.id === b.branchId)).length;
 
   return (
     <>
@@ -58,7 +60,7 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
                 href={sectionHref(s.id)}
                 title={s.label}
                 onClick={onClose}
-                className={`relative flex h-11 items-center gap-3 rounded-md px-3.5 text-sm font-semibold lg:justify-center lg:px-0 xl:justify-start xl:px-3.5 ${
+                className={`relative flex h-11 items-center gap-3 rounded-md px-3.5 text-sm font-semibold lg:justify-center lg:px-0 xl:justify-start xl:px-3.5 ${s.id === 'hours-menus' ? NEW_MARK : ''} ${
                   active ? 'bg-brand-purple text-inverse hover:text-inverse' : 'text-fg-soft hover:bg-brand-purple/6 hover:text-fg-soft'
                 }`}
               >
@@ -79,7 +81,7 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
 
         <div className="relative border-t border-border-subtle p-3">
           <div className="mb-2.5 flex flex-col gap-1 rounded-lg bg-page px-3.5 py-3 lg:hidden xl:flex">
-            <div className="text-sm font-bold text-brand-purple">{VENUE}</div>
+            <div className="text-sm font-bold text-brand-purple">{BUSINESS_NAME}</div>
             <div className="text-xs text-ink-muted">{branches.length === 1 ? '1 branch' : `${branches.length} branches`} · Dubai</div>
             <div className="mt-1.5 flex items-center justify-between">
               <span className="rounded-pill bg-brand-peach/14 px-2.5 py-1 text-xs font-bold text-peach-ink">{plan} plan</span>

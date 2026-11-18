@@ -10,7 +10,7 @@ import { Card, CardTitle } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Segmented } from '@/components/ui/Segmented';
-import { IMG, RANGES, SERIES, VENUE, type Range } from '@/lib/portal/data';
+import { IMG, RANGES, SERIES, BUSINESS_NAME, type Range } from '@/lib/portal/data';
 import { firstName } from '@/lib/portal/format';
 import { LOCKED_REASON } from '@/lib/portal/messages';
 import { Chart, ChartLabels, Legend } from './Chart';
@@ -46,7 +46,7 @@ export function Dashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-[26px] font-bold text-fg">Good morning, Layla</div>
-          <div className="text-[15px] text-ink-muted">Here&apos;s how {VENUE} is doing · Wednesday, 23 September</div>
+          <div className="text-[15px] text-ink-muted">Here&apos;s how {BUSINESS_NAME} is doing · Wednesday, 23 September</div>
         </div>
         <Segmented options={RANGES} value={range} onChange={setRange} />
       </div>

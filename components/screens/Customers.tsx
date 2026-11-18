@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/Field';
 import { Star } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Segmented } from '@/components/ui/Segmented';
-import { BOOKINGS, CUSTOMERS, REVIEWS, VISIT_HISTORY } from '@/lib/portal/data';
+import { CUSTOMERS, REVIEWS, VISIT_HISTORY } from '@/lib/portal/data';
 import { CLIENT_REPORT_REASONS, REVIEW_REPORT_REASONS } from '@/lib/portal/messages';
 import { firstName } from '@/lib/portal/format';
 import { useRoleLock } from '@/components/portal/useLock';
@@ -30,7 +30,7 @@ const COLS = 'grid grid-cols-[minmax(200px,2.2fr)_repeat(4,minmax(70px,1fr))] ga
 export function Customers() {
   const reportLock = useRoleLock('reports.create');
   const replyLock = useRoleLock('reviews.reply');
-  const { showToast } = usePortal();
+  const { showToast, bookings } = usePortal();
   const { report, reportedReviewIds, reportedCustomerIds } = useMessages();
   const [reporting, setReporting] = useState<{ kind: 'review'; id: number } | { kind: 'client'; id: number } | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
@@ -236,7 +236,7 @@ export function Customers() {
         open={reporting?.kind === 'client'}
         title="Report client"
         reasons={CLIENT_REPORT_REASONS}
-        bookings={reportedClient ? BOOKINGS.filter((b) => b.name === reportedClient.name).map((b) => `${b.time} · party of ${b.party}`) : []}
+        bookings={reportedClient ? bookings.filter((b) => b.name === reportedClient.name).map((b) => `${b.time} · party of ${b.party}`) : []}
         onClose={() => setReporting(null)}
         onSubmit={({ reason, details, booking }) => {
           if (reportedClient)

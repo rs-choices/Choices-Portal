@@ -8,7 +8,7 @@ import { Card, CardTitle } from '@/components/ui/Card';
 import { Input, Label, Select } from '@/components/ui/Field';
 import { Segmented } from '@/components/ui/Segmented';
 import { Toggle } from '@/components/ui/Toggle';
-import { TEAM, VENUE } from '@/lib/portal/data';
+import { TEAM, BUSINESS_NAME } from '@/lib/portal/data';
 import { Avatar } from '@/components/ui/Avatar';
 import { useRoleLock } from '@/components/portal/useLock';
 
@@ -49,7 +49,7 @@ export function Settings() {
         <CardTitle>Business details</CardTitle>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
           <Label label="Business name">
-            <Input defaultValue={VENUE} disabled={detailsLock.disabled} title={detailsLock.title} />
+            <Input defaultValue={BUSINESS_NAME} disabled={detailsLock.disabled} title={detailsLock.title} />
           </Label>
           <Label label="Logo">
             <Button variant="secondary" size="sm" className="self-start" {...detailsLock}>

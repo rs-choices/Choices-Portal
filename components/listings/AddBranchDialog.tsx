@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useListings } from '@/components/portal/ListingsProvider';
+import { useHours } from '@/components/portal/HoursProvider';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input, Label } from '@/components/ui/Field';
@@ -10,6 +11,7 @@ import { useLock } from '@/components/portal/useLock';
 // A new branch is a new place. It waits for the Choices team to verify it.
 export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { addBranch } = useListings();
+  const { createForBranch } = useHours();
   const lock = useLock('branch.add');
   const [name, setName] = useState('');
   const [area, setArea] = useState('');
@@ -44,7 +46,8 @@ export function AddBranchDialog({ open, onClose }: { open: boolean; onClose: () 
             disabled={lock.disabled || !ready}
             title={lock.title}
             onClick={() => {
-              addBranch({ name: name.trim(), area: area.trim() || name.trim(), address: address.trim(), licence: licence.trim(), open: opens, close: closes });
+              const id = addBranch({ name: name.trim(), area: area.trim() || name.trim(), address: address.trim(), licence: licence.trim() });
+              createForBranch(id, name.trim(), opens, closes);
               close();
             }}
           >
