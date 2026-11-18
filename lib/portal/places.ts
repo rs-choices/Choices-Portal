@@ -1,4 +1,4 @@
-import { HOURS, type Plan } from './data';
+import { type Plan } from './data';
 
 // Mock branches, outlets, events and activities. A business lists each
 // branch as a place first; events, activities and offers are added on top of
@@ -16,7 +16,6 @@ export const OUTLET_TYPES: OutletType[] = ['Food & Beverage', 'Activities', 'Eve
 export type PlaceDetails = {
   description: string;
   photos: number[];
-  hours: [day: string, open: string, close: string][];
   tags: string[];
   priceBand: 0 | 1 | 2;
   whatsapp: string;
@@ -74,8 +73,6 @@ export const ACTIVITY_STATUS: Record<ActivityStatus, { label: string; className:
   unpublished: { label: 'Unpublished', className: 'bg-line-soft text-fg-grey' },
 };
 
-const EVENING: PlaceDetails['hours'] = HOURS.map(([d]) => [d, '5:00 PM', '1:00 AM']);
-const DAYTIME: PlaceDetails['hours'] = HOURS.map(([d]) => [d, '10:00 AM', '8:00 PM']);
 
 export const BRANCHES: Branch[] = [
   { id: 'b-jum', name: 'Jumeirah 1', area: 'Jumeirah', address: 'Jumeirah Beach Road, near Mercato Mall', licence: 'DED-884213', status: 'verified' },
@@ -94,7 +91,6 @@ export const OUTLETS: Outlet[] = [
     place: {
       description: 'A neighbourhood café on Jumeirah Beach Road. Specialty coffee, all-day breakfast and a terrace that catches the sunset.',
       photos: [0, 1, 2, 3, 4],
-      hours: HOURS,
       tags: ['Outdoor seating', 'Free Wi-Fi', 'Laptop friendly', 'Family friendly'],
       priceBand: 1,
       whatsapp: '+971 4 555 0199',
@@ -107,7 +103,7 @@ export const OUTLETS: Outlet[] = [
     type: 'Food & Beverage',
     isDefault: true,
     status: 'live',
-    place: { description: 'Coffee and pastries on the ground floor, right on Marina Walk.', photos: [2, 0], hours: HOURS, tags: ['Free Wi-Fi', 'Laptop friendly'], priceBand: 0, whatsapp: '+971 4 555 0200' },
+    place: { description: 'Coffee and pastries on the ground floor, right on Marina Walk.', photos: [2, 0], tags: ['Free Wi-Fi', 'Laptop friendly'], priceBand: 0, whatsapp: '+971 4 555 0200' },
   },
   {
     id: 'o-mar-roof',
@@ -116,7 +112,7 @@ export const OUTLETS: Outlet[] = [
     type: 'Food & Beverage',
     isDefault: false,
     status: 'live',
-    place: { description: 'Dinner on the 32nd floor with a view over the marina. Live music on Thursdays.', photos: [3, 1, 4], hours: EVENING, tags: ['Sea view', 'Valet parking'], priceBand: 2, whatsapp: '+971 4 555 0201' },
+    place: { description: 'Dinner on the 32nd floor with a view over the marina. Live music on Thursdays.', photos: [3, 1, 4], tags: ['Sea view', 'Valet parking'], priceBand: 2, whatsapp: '+971 4 555 0201' },
   },
   {
     id: 'o-mar-kids',
@@ -125,7 +121,7 @@ export const OUTLETS: Outlet[] = [
     type: 'Leisure',
     isDefault: false,
     status: 'live',
-    place: { description: 'A supervised play and craft corner for children aged 3 to 10.', photos: [5, 4], hours: DAYTIME, tags: ['Family friendly'], priceBand: 0, whatsapp: '+971 4 555 0202' },
+    place: { description: 'A supervised play and craft corner for children aged 3 to 10.', photos: [5, 4], tags: ['Family friendly'], priceBand: 0, whatsapp: '+971 4 555 0202' },
   },
   {
     id: 'o-dtn',
@@ -134,7 +130,7 @@ export const OUTLETS: Outlet[] = [
     type: 'Food & Beverage',
     isDefault: true,
     status: 'live',
-    place: { description: 'Our newest café, opening next to the Boulevard.', photos: [1], hours: HOURS, tags: ['Outdoor seating'], priceBand: 1, whatsapp: '+971 4 555 0203' },
+    place: { description: 'Our newest café, opening next to the Boulevard.', photos: [1], tags: ['Outdoor seating'], priceBand: 1, whatsapp: '+971 4 555 0203' },
   },
 ];
 
