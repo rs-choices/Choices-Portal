@@ -5,6 +5,8 @@ import { Icon } from '@/components/ui/Icon';
 import { LOCKED_REASON } from '@/lib/portal/messages';
 import { ROLE_REASON, type Permission } from '@/lib/portal/roles';
 import { ACTION_TOAST, type SectionId } from '@/lib/portal/sections';
+import { NEW_MARK } from '@/lib/portal/reviewMark';
+import { useHours } from './HoursProvider';
 import { useListings } from './ListingsProvider';
 import { useMessages } from './MessagesProvider';
 import { NotificationBell } from './NotificationBell';
@@ -16,6 +18,7 @@ const ACTION_PERMISSION: Partial<Record<SectionId, Permission>> = {
   events: 'listings.manage',
   activities: 'listings.manage',
   branches: 'branch.add',
+  'hours-menus': 'place.edit',
   bookings: 'bookings.manage',
   customers: 'customers.export',
   analytics: 'analytics.view',
@@ -35,12 +38,13 @@ export function Header({
   onMenu: () => void;
   highlight: 'btn' | 'bell' | null;
 }) {
-  const { openOfferForm, showToast, tour, can } = usePortal();
+  const { openOfferForm, showToast, tour, can, setAddBookingOpen } = usePortal();
   const { suspended, openSupportChat } = useMessages();
   const { openEventForm, openActivityForm, setAddBranchOpen } = useListings();
+  const { openForm } = useHours();
   const newOffer = section === 'dashboard' || section === 'offers';
   // While suspended, actions that change what clients see are locked.
-  const suspendLocked = suspended && (newOffer || section === 'bookings' || section === 'branches' || section === 'events' || section === 'activities');
+  const suspendLocked = suspended && (newOffer || section === 'bookings' || section === 'branches' || section === 'hours-menus' || section === 'events' || section === 'activities');
   // Each page's main action needs a permission (docs/domain/roles-and-permissions.md).
   const need = ACTION_PERMISSION[section];
   const roleLocked = !!need && !can(need);
@@ -49,6 +53,8 @@ export function Header({
   const onAction = () => {
     if (newOffer) openOfferForm();
     else if (section === 'branches') setAddBranchOpen(true);
+    else if (section === 'bookings') setAddBookingOpen(true);
+    else if (section === 'hours-menus') openForm({ kind: 'special', item: null });
     else if (section === 'events') openEventForm();
     else if (section === 'activities') openActivityForm();
     else if (section === 'help') openSupportChat();
@@ -84,9 +90,9 @@ export function Header({
         onClick={onAction}
         disabled={locked}
         title={suspendLocked ? LOCKED_REASON : roleLocked ? ROLE_REASON : undefined}
-        className={`shrink-0 ${highlight === 'btn' ? 'shadow-tour-ring' : ''}`}
+        className={`shrink-0 ${highlight === 'btn' ? 'shadow-tour-ring' : ''} ${section === 'hours-menus' || section === 'bookings' ? NEW_MARK : ''}`}
       >
-        {(newOffer || section === 'branches' || section === 'events' || section === 'activities') && <Icon name="plus" size={18} stroke={2.2} />}
+        {(newOffer || section === 'branches' || section === 'hours-menus' || section === 'bookings' || section === 'events' || section === 'activities') && <Icon name="plus" size={18} stroke={2.2} />}
         {action}
       </Button>
     </header>

@@ -15,8 +15,6 @@ import {
   type OutletType,
   type PlaceDetails,
 } from '@/lib/portal/places';
-import { HOURS } from '@/lib/portal/data';
-import { fmtTime } from '@/lib/portal/format';
 import { usePortal } from './PortalProvider';
 
 // Branches, outlets, events and activities, shared by every portal page.
@@ -34,7 +32,10 @@ type Ctx = {
   outlets: Outlet[];
   events: EventListing[];
   activities: Activity[];
-  addBranch: (b: { name: string; area: string; address: string; licence: string; open: string; close: string }) => void;
+  // Branches whose bookings this person sees. Verified only (a branch waiting
+  // for verification takes no bookings). Branch limits plug in here later.
+  visibleBranches: Branch[];
+  addBranch: (b: { name: string; area: string; address: string; licence: string }) => string;
   requestOutlet: (branchId: string, o: { name: string; type: OutletType }) => void;
   updatePlace: (outletId: string, place: PlaceDetails, name?: string) => void;
   setEventStatus: (id: number, s: EventStatus) => void;
@@ -79,7 +80,7 @@ export function ListingsProvider({ children }: { children: ReactNode }) {
     return !!o && !!b && o.status === 'live' && b.status === 'verified';
   };
 
-  const addBranch: Ctx['addBranch'] = ({ open, close, ...b }) => {
+  const addBranch: Ctx['addBranch'] = (b) => {
     const id = `b-new-${nextId.current++}`;
     setBranches((all) => [...all, { id, ...b, status: 'waiting' }]);
     setOutlets((all) => [
@@ -91,10 +92,11 @@ export function ListingsProvider({ children }: { children: ReactNode }) {
         type: 'Food & Beverage',
         isDefault: true,
         status: 'live',
-        place: { description: '', photos: [], hours: HOURS.map(([day]) => [day, fmtTime(open), fmtTime(close)]), tags: [], priceBand: 1, whatsapp: '' },
+        place: { description: '', photos: [], tags: [], priceBand: 1, whatsapp: '' },
       },
     ]);
     showToast('Branch added. The Choices team verifies it within two working days.');
+    return id;
   };
 
   const requestOutlet: Ctx['requestOutlet'] = (branchId, o) => {
@@ -107,7 +109,7 @@ export function ListingsProvider({ children }: { children: ReactNode }) {
         type: o.type,
         isDefault: false,
         status: 'requested',
-        place: { description: '', photos: [], hours: [], tags: [], priceBand: 1, whatsapp: '' },
+        place: { description: '', photos: [], tags: [], priceBand: 1, whatsapp: '' },
       },
     ]);
     showToast('Request sent. The Choices team will review it.');
@@ -145,6 +147,7 @@ export function ListingsProvider({ children }: { children: ReactNode }) {
     outlets,
     events,
     activities,
+    visibleBranches: branches.filter((b) => b.status === 'verified'),
     addBranch,
     requestOutlet,
     updatePlace,
