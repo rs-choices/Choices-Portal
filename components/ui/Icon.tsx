@@ -32,6 +32,8 @@ export const ICONS = {
   upload: 'M12 16V5M7 10l5-5 5 5M5 20h14',
   download: 'M12 4v11M7 10l5 5 5-5M5 20h14',
   lock: 'M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3',
+  ticket: 'M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4zM10 7v10',
+  flag: 'M5 21V4h11l-2 4 2 4H5',
 } as const;
 
 // Filled glyphs, drawn with fill rather than stroke.

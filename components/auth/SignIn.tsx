@@ -23,7 +23,7 @@ export function SignIn() {
         router.push('/dashboard');
       }}
     >
-      <AuthHeading title="Welcome back">Sign in to manage your venue on Choices.</AuthHeading>
+      <AuthHeading title="Welcome back">Sign in to manage your business on Choices.</AuthHeading>
       <Label label="Email">
         <Input size="lg" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       </Label>
@@ -58,7 +58,7 @@ export function SignIn() {
         <div className="h-px flex-1 bg-surface-muted" />
       </div>
       <Button variant="secondary" size="block" onClick={() => router.push('/onboarding')}>
-        List your venue
+        List your business
       </Button>
       <div className="text-center text-xs text-fg-subtle">From AED 299 a month. No contract, cancel any time.</div>
     </form>

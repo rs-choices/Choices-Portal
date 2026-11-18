@@ -1,5 +1,7 @@
 'use client';
 
+import { RoleBlocked } from '@/components/portal/States';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePortal } from '@/components/portal/PortalProvider';
@@ -7,7 +9,7 @@ import { Card, CardTitle } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Segmented } from '@/components/ui/Segmented';
-import { IMG, RANGES, SERIES, VENUE, VIEW_SOURCES, type Range } from '@/lib/portal/data';
+import { IMG, RANGES, SERIES, BUSINESS_NAME, VIEW_SOURCES, type Range } from '@/lib/portal/data';
 import { fmtTime } from '@/lib/portal/format';
 import { Chart, ChartLabels, Legend } from './Chart';
 
@@ -27,6 +29,11 @@ const HEAT = DAYS.map((day, di) => ({
 }));
 
 export function Analytics() {
+  const { can } = usePortal();
+  return can('analytics.view') ? <AnalyticsPage /> : <RoleBlocked />;
+}
+
+function AnalyticsPage() {
   const { plan, offers } = usePortal();
   const [range, setRange] = useState<Range>('7d');
   const d = SERIES[range];
@@ -39,7 +46,7 @@ export function Analytics() {
   return (
     <section className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="text-[15px] text-fg-muted">How people find {VENUE}, and what makes them come in.</div>
+        <div className="text-[15px] text-fg-muted">How people find {BUSINESS_NAME}, and what makes them come in.</div>
         <Segmented options={RANGES} value={range} onChange={setRange} />
       </div>
 

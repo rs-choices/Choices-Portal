@@ -40,7 +40,7 @@ export function ForgotPassword() {
         <>
           <AuthHeading title="Forgot your password?">Enter the email you use for Choices and we&apos;ll send you a link to reset it.</AuthHeading>
           <Label label="Email">
-            <Input size="lg" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@yourvenue.ae" />
+            <Input size="lg" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@yourbusiness.ae" />
             {error && <FieldError>Enter a valid email address.</FieldError>}
           </Label>
           <Button

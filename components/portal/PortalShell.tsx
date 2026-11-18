@@ -2,8 +2,15 @@
 
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
+import { ActivityFormModal } from '@/components/listings/ActivityFormModal';
+import { EventFormModal } from '@/components/listings/EventFormModal';
 import { sectionFromPath } from '@/lib/portal/sections';
+import { AccountBanner } from './AccountBanner';
 import { Header } from './Header';
+import { HoursProvider } from '@/components/portal/HoursProvider';
+import { HoursForms } from '@/components/hours/HoursForms';
+import { ListingsProvider } from './ListingsProvider';
+import { MessagesProvider } from './MessagesProvider';
 import { OfferFormModal } from './OfferFormModal';
 import { usePortal } from './PortalProvider';
 import { Sidebar } from './Sidebar';
@@ -25,21 +32,33 @@ export function PortalShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-page text-sm text-fg">
-      <Sidebar open={drawer} onClose={() => setDrawer(false)} highlight={hl === 'nav'} />
-      <main className="flex min-w-0 flex-1 flex-col">
-        <Header
-          section={section.id}
-          title={section.label}
-          action={section.action}
-          onMenu={() => setDrawer(true)}
-          highlight={hl === 'btn' || hl === 'bell' ? hl : null}
-        />
-        <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-6 p-7">{children}</div>
-      </main>
-      <Tour onStep={onTourStep} />
-      <OfferFormModal />
-      <Toast />
-    </div>
+    <MessagesProvider>
+      <ListingsProvider>
+        <HoursProvider>
+        <div className="flex min-h-screen bg-page text-sm text-fg">
+          <Sidebar open={drawer} onClose={() => setDrawer(false)} highlight={hl === 'nav'} />
+          <main className="flex min-w-0 flex-1 flex-col">
+            <Header
+              section={section.id}
+              title={section.label}
+              action={section.action}
+              onMenu={() => setDrawer(true)}
+              highlight={hl === 'btn' || hl === 'bell' ? hl : null}
+            />
+            <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-6 p-7">
+              <AccountBanner />
+              {children}
+            </div>
+          </main>
+          <Tour onStep={onTourStep} />
+          <OfferFormModal />
+          <EventFormModal />
+          <ActivityFormModal />
+          <HoursForms />
+          <Toast />
+        </div>
+        </HoursProvider>
+      </ListingsProvider>
+    </MessagesProvider>
   );
 }

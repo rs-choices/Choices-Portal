@@ -1,9 +1,10 @@
 'use client';
 
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { BOOKINGS, OFFERS, TODAY, type Booking, type BookingStatus, type Offer, type OfferStatus, type Plan } from '@/lib/portal/data';
+import { buildBookings, OFFERS, TODAY, bookingTime, sortKey, type Booking, type BookingStatus, type Offer, type OfferStatus, type Plan } from '@/lib/portal/data';
 import { fmtDate, fmtTime } from '@/lib/portal/format';
+import { can as roleCan, demoUser, parseRole, type Permission, type Role } from '@/lib/portal/roles';
 
 // Client-side state shared by every page, mounted in the root layout so
 // onboarding can hand over to the dashboard tour. With no backend yet, offers,
@@ -19,10 +20,11 @@ export type OfferTab = 'active' | 'scheduled' | 'draft' | 'expired';
 type Checklist = { profile: boolean; photos: boolean; offer: boolean };
 
 type Ctx = {
+  role: Role;
+  user: ReturnType<typeof demoUser>;
+  can: (p: Permission) => boolean;
   plan: Plan;
   setPlan: (p: Plan) => void;
-  location: number;
-  setLocation: (i: number) => void;
   offers: Offer[];
   updateOffer: (id: number, change: Partial<Offer>, message?: string) => void;
   duplicateOffer: (o: Offer) => void;
@@ -30,6 +32,10 @@ type Ctx = {
   setOfferTab: (t: OfferTab) => void;
   bookings: Booking[];
   setBookingStatus: (id: number, status: BookingStatus, message: string) => void;
+  // A manual booking staff typed in. A walk-in is checked in at once.
+  addBooking: (b: Omit<Booking, 'id' | 't' | 'time' | 'offer' | 'status'> & { at: string }) => Booking;
+  addBookingOpen: boolean;
+  setAddBookingOpen: (v: boolean) => void;
   checklist: Checklist;
   completeChecklist: (key: keyof Checklist) => void;
   finishOnboarding: () => void;
@@ -53,20 +59,29 @@ export function usePortal() {
   return ctx;
 }
 
-const NEW_OFFER: OfferDraft = { id: null, title: '', desc: '', deal: '', type: 'Discount', img: 0, sd: TODAY, st: '16:00', ed: '2026-09-30', et: '19:00', red: 100 };
+const NEW_OFFER: OfferDraft = { id: null, outletId: '', title: '', desc: '', deal: '', type: 'Discount', img: 0, sd: TODAY, st: '16:00', ed: '2026-09-30', et: '19:00', red: 100 };
 
 export function PortalProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [plan, setPlan] = useState<Plan>('Starter');
-  const [location, setLocation] = useState(0);
   const [offers, setOffers] = useState(OFFERS);
   const [offerTab, setOfferTab] = useState<OfferTab>('active');
-  const [bookings, setBookings] = useState(BOOKINGS);
+  const [bookings, setBookings] = useState(buildBookings);
+  const [addBookingOpen, setAddBookingOpen] = useState(false);
   const [checklist, setChecklist] = useState<Checklist>({ profile: true, photos: false, offer: false });
   const [form, setForm] = useState<OfferDraft | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [tour, setTour] = useState<number | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [role, setRole] = useState<Role>('Owner');
+
+  // Read the forced role (?role=) once, on first load, like ?account=. The
+  // provider stays mounted, so the role holds while the user navigates.
+  useEffect(() => {
+    const forced = parseRole(window.location.search);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time sync from the URL after hydration
+    if (forced !== 'Owner') setRole(forced);
+  }, []);
 
   const showToast = useCallback((m: string) => {
     clearTimeout(toastTimer.current);
@@ -84,12 +99,12 @@ export function PortalProvider({ children }: { children: ReactNode }) {
 
   const saveOfferForm = (asDraft: boolean) => {
     const f = form;
-    if (!f || !f.title.trim()) return false;
+    if (!f || !f.outletId || !f.title.trim()) return false;
     const status: Exclude<OfferTab, 'expired'> = asDraft ? 'draft' : f.sd > TODAY ? 'scheduled' : 'active';
     const saved = {
       ...f,
       status,
-      window: (f.type === 'Event' ? fmtDate(f.sd) : 'Daily') + ' · ' + fmtTime(f.st) + '–' + fmtTime(f.et),
+      window: 'Daily · ' + fmtTime(f.st) + '–' + fmtTime(f.et),
       dates: status === 'scheduled' ? 'Starts ' + fmtDate(f.sd) : status === 'draft' ? 'Not scheduled' : 'Until ' + fmtDate(f.ed),
       deal: f.deal || 'Offer',
       live: false,
@@ -105,10 +120,11 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   };
 
   const value: Ctx = {
+    role,
+    user: demoUser(role),
+    can: (p) => roleCan(role, p),
     plan,
     setPlan,
-    location,
-    setLocation,
     offers,
     updateOffer: (id, change, message) => {
       setOffers((all) => all.map((x) => (x.id === id ? { ...x, ...change } : x)));
@@ -126,10 +142,18 @@ export function PortalProvider({ children }: { children: ReactNode }) {
       setBookings((all) => all.map((b) => (b.id === id ? { ...b, status } : b)));
       showToast(message);
     },
+    addBooking: ({ at, ...b }) => {
+      const booking: Booking = { ...b, id: Date.now(), t: sortKey(at), time: bookingTime(at), offer: '—', status: b.source === 'walk-in' ? 'checkedin' : 'confirmed' };
+      setBookings((all) => [...all, booking]);
+      showToast(`${b.source === 'walk-in' ? 'Walk-in' : 'Manual booking'} added for ${b.party} at ${booking.time}.`);
+      return booking;
+    },
+    addBookingOpen,
+    setAddBookingOpen,
     checklist,
     completeChecklist: (key) => setChecklist((c) => ({ ...c, [key]: true })),
     finishOnboarding: () => {
-      setChecklist({ profile: true, photos: true, offer: true });
+      setChecklist({ profile: false, photos: false, offer: false });
       setTour(0);
       router.push('/dashboard');
     },

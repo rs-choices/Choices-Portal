@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { BranchFilter, useInBranch } from '@/components/listings/shared';
+import { useListings } from '@/components/portal/ListingsProvider';
 import { usePortal, type OfferTab } from '@/components/portal/PortalProvider';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -9,6 +12,8 @@ import { PLAY } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { IMG, STATUS, type Offer } from '@/lib/portal/data';
+import { placeLabel } from '@/lib/portal/places';
+import { useLock } from '@/components/portal/useLock';
 
 const TABS: [OfferTab, string, (o: Offer) => boolean][] = [
   ['active', 'Active', (o) => o.status === 'active' || o.status === 'paused'],
@@ -19,8 +24,12 @@ const TABS: [OfferTab, string, (o: Offer) => boolean][] = [
 
 export function Offers() {
   const { offers, plan, offerTab, setOfferTab, openOfferForm, updateOffer, duplicateOffer } = usePortal();
+  const lock = useLock('listings.manage');
+  const { outlets, branches } = useListings();
+  const inBranch = useInBranch();
+  const [branchId, setBranchId] = useState('');
   const tab = TABS.find((t) => t[0] === offerTab)!;
-  const list = offers.filter(tab[2]);
+  const list = offers.filter(tab[2]).filter((o) => inBranch(o.outletId, branchId));
   const active = offers.filter((o) => o.status === 'active').length;
   const limit = plan === 'Starter' ? 10 : null;
 
@@ -60,11 +69,16 @@ export function Offers() {
         </div>
       </div>
 
+      <BranchFilter value={branchId} onChange={setBranchId} />
+
       <div className="flex flex-col gap-3">
         {list.map((o) => (
           <OfferRow
             key={o.id}
             o={o}
+            place={placeLabel(outlets, branches, o.outletId)}
+            locked={lock.disabled}
+            reason={lock.title}
             onPause={() => updateOffer(o.id, { status: 'paused', live: false }, 'Offer paused. It is hidden from the app until you resume it.')}
             onResume={() => updateOffer(o.id, { status: 'active' }, 'Offer resumed')}
             onEnd={() => updateOffer(o.id, { status: 'expired', live: false, dates: 'Ended today' }, 'Offer ended')}
@@ -76,7 +90,7 @@ export function Offers() {
           <div className="flex flex-col items-center gap-2.5 rounded-xl border-[1.5px] border-dashed border-line-strong bg-surface p-10 text-center">
             <div className="text-base font-bold text-brand-purple">No {tab[1].toLowerCase()} offers</div>
             <div className="text-fg-muted">Offers you create will show up here.</div>
-            <Button size="md" className="mt-1 py-3" onClick={() => openOfferForm()}>
+            <Button size="md" className="mt-1 py-3" onClick={() => openOfferForm()} {...lock}>
               New offer
             </Button>
           </div>
@@ -86,10 +100,12 @@ export function Offers() {
   );
 }
 
-type RowProps = { o: Offer; onPause: () => void; onResume: () => void; onEnd: () => void; onEdit: () => void; onDuplicate: () => void };
+type RowProps = { o: Offer; place: string; locked: boolean; reason?: string; onPause: () => void; onResume: () => void; onEnd: () => void; onEdit: () => void; onDuplicate: () => void };
 
-function OfferRow({ o, onPause, onResume, onEnd, onEdit, onDuplicate }: RowProps) {
+function OfferRow({ o, place, locked, reason, onPause, onResume, onEnd, onEdit, onDuplicate }: RowProps) {
   const st = STATUS[o.status];
+  // Locked while the business is suspended or for a role that can't manage offers.
+  const lock = { disabled: locked };
   return (
     <Card className="flex flex-wrap items-center gap-4 p-3.5">
       <div role="img" style={{ backgroundImage: `url('${IMG[o.img]}')` }} className="size-[84px] shrink-0 rounded-lg bg-surface-muted bg-cover bg-center" />
@@ -102,39 +118,42 @@ function OfferRow({ o, onPause, onResume, onEnd, onEdit, onDuplicate }: RowProps
           <span className="rounded-sm bg-brand-peach/12 px-2 py-0.5 font-bold text-peach-ink">{o.deal}</span>
           <span>{o.type}</span>·<span>{o.window}</span>·<span>{o.dates}</span>
         </div>
+        <div className="text-[13px] text-fg-soft">At {place}</div>
       </div>
       <div className="flex gap-6 px-2">
         <Metric label="Views" value={o.views} />
         <Metric label="Claims" value={o.claims} />
       </div>
-      <div className="flex gap-1.5">
-        {o.status === 'active' && <IconButton icon="pause" stroke={2.2} title="Pause" aria-label="Pause" onClick={onPause} />}
+      <div className="flex gap-1.5" title={locked ? reason : undefined}>
+        {o.status === 'active' && <IconButton icon="pause" stroke={2.2} title="Pause" aria-label="Pause" onClick={onPause} {...lock} />}
         {o.status === 'paused' && (
           <button
             type="button"
             title="Resume"
             aria-label="Resume"
             onClick={onResume}
-            className="grid size-9 cursor-pointer place-items-center rounded-[12px] border-none bg-fill-soft text-brand-purple hover:bg-fill-hover"
+            {...lock}
+            className="grid size-9 cursor-pointer place-items-center rounded-[12px] border-none bg-fill-soft text-brand-purple hover:bg-fill-hover disabled:cursor-not-allowed disabled:opacity-45"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" className="fill-current" aria-hidden="true">
               <path d={PLAY} />
             </svg>
           </button>
         )}
-        {o.status !== 'expired' && <IconButton icon="edit" title="Edit" aria-label="Edit" onClick={onEdit} />}
-        <IconButton icon="copy" title="Duplicate" aria-label="Duplicate" onClick={onDuplicate} />
+        {o.status !== 'expired' && <IconButton icon="edit" title="Edit" aria-label="Edit" onClick={onEdit} {...lock} />}
+        <IconButton icon="copy" title="Duplicate" aria-label="Duplicate" onClick={onDuplicate} {...lock} />
         {(o.status === 'active' || o.status === 'paused' || o.status === 'scheduled') && (
           <button
             type="button"
             onClick={onEnd}
-            className="h-9 cursor-pointer rounded-[12px] border-none bg-brand-peach/12 px-3 text-xs font-semibold text-peach-ink hover:bg-brand-peach/20"
+            {...lock}
+            className="h-9 cursor-pointer rounded-[12px] border-none bg-brand-peach/12 px-3 text-xs font-semibold text-peach-ink hover:bg-brand-peach/20 disabled:cursor-not-allowed disabled:opacity-45"
           >
             End early
           </button>
         )}
         {o.status === 'expired' && (
-          <button type="button" onClick={onDuplicate} className="h-9 cursor-pointer rounded-[12px] border-none bg-surface-purple px-3 text-xs font-semibold text-brand-purple">
+          <button type="button" onClick={onDuplicate} {...lock} className="h-9 cursor-pointer rounded-[12px] border-none bg-surface-purple px-3 text-xs font-semibold text-brand-purple disabled:cursor-not-allowed disabled:opacity-45">
             Run again
           </button>
         )}

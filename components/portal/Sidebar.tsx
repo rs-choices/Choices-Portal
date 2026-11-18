@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
-import { LOCATIONS, USER, VENUE } from '@/lib/portal/data';
+import { BUSINESS_NAME } from '@/lib/portal/data';
 import { SECTIONS, sectionHref } from '@/lib/portal/sections';
+import { NEW_MARK } from '@/lib/portal/reviewMark';
+import { useListings } from './ListingsProvider';
 import { usePortal } from './PortalProvider';
 
 // Three layouts, switched by breakpoint:
@@ -16,9 +18,11 @@ import { usePortal } from './PortalProvider';
 // `hidden lg:… xl:…` pairs below hide the labels in the icon rail only.
 export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: () => void; highlight: boolean }) {
   const pathname = usePathname();
-  const { plan, bookings, location, setLocation, showToast } = usePortal();
+  const { plan, bookings, user, can } = usePortal();
+  const { branches } = useListings();
   const [userOpen, setUserOpen] = useState(false);
-  const pending = bookings.filter((b) => b.status === 'requested').length;
+  const { visibleBranches } = useListings();
+  const pending = bookings.filter((b) => b.status === 'requested' && visibleBranches.some((v) => v.id === b.branchId)).length;
 
   return (
     <>
@@ -46,7 +50,7 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-2">
-          {SECTIONS.map((s) => {
+          {SECTIONS.filter((s) => (s.id === 'analytics' ? can('analytics.view') : s.id === 'billing' ? can('billing.invoices') : true)).map((s) => {
             const active = pathname === sectionHref(s.id);
             const locked = s.id === 'analytics' && plan === 'Starter';
             const badge = s.id === 'bookings' && pending ? pending : null;
@@ -56,7 +60,7 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
                 href={sectionHref(s.id)}
                 title={s.label}
                 onClick={onClose}
-                className={`relative flex h-11 items-center gap-3 rounded-md px-3.5 text-sm font-semibold lg:justify-center lg:px-0 xl:justify-start xl:px-3.5 ${
+                className={`relative flex h-11 items-center gap-3 rounded-md px-3.5 text-sm font-semibold lg:justify-center lg:px-0 xl:justify-start xl:px-3.5 ${s.id === 'hours-menus' ? NEW_MARK : ''} ${
                   active ? 'bg-brand-purple text-inverse hover:text-inverse' : 'text-fg-soft hover:bg-brand-purple/6 hover:text-fg-soft'
                 }`}
               >
@@ -77,8 +81,8 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
 
         <div className="relative border-t border-border-subtle p-3">
           <div className="mb-2.5 flex flex-col gap-1 rounded-lg bg-page px-3.5 py-3 lg:hidden xl:flex">
-            <div className="text-sm font-bold text-brand-purple">{VENUE}</div>
-            <div className="text-xs text-ink-muted">{LOCATIONS[location]}, Dubai</div>
+            <div className="text-sm font-bold text-brand-purple">{BUSINESS_NAME}</div>
+            <div className="text-xs text-ink-muted">{branches.length === 1 ? '1 branch' : `${branches.length} branches`} · Dubai</div>
             <div className="mt-1.5 flex items-center justify-between">
               <span className="rounded-pill bg-brand-peach/14 px-2.5 py-1 text-xs font-bold text-peach-ink">{plan} plan</span>
               {plan === 'Starter' && (
@@ -94,37 +98,16 @@ export function Sidebar({ open, onClose, highlight }: { open: boolean; onClose: 
             onClick={() => setUserOpen((o) => !o)}
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-md border-none bg-transparent p-1.5 text-left hover:bg-fill-soft lg:justify-center xl:justify-start"
           >
-            <div className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-purple text-[13px] font-bold text-inverse">{USER.initials}</div>
+            <div className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-purple text-[13px] font-bold text-inverse">{user.initials}</div>
             <div className="min-w-0 flex-1 lg:hidden xl:block">
-              <div className="font-semibold text-fg">{USER.name}</div>
-              <div className="text-xs text-ink-muted">{USER.role}</div>
+              <div className="font-semibold text-fg">{user.name}</div>
+              <div className="text-xs text-ink-muted">{user.role}</div>
             </div>
             <Icon name="chevronUp" size={16} stroke={2} className="text-fg-muted lg:hidden xl:block" />
           </button>
 
           {userOpen && (
             <div className="absolute bottom-[72px] left-3 z-60 flex w-[236px] flex-col gap-0.5 rounded-lg bg-surface p-2 shadow-popover">
-              {plan === 'Enterprise' && (
-                <>
-                  <div className="px-2.5 pt-2 pb-1 text-[11px] font-bold tracking-[0.06em] text-fg-subtle">LOCATIONS</div>
-                  {LOCATIONS.map((l, i) => (
-                    <button
-                      key={l}
-                      type="button"
-                      onClick={() => {
-                        setLocation(i);
-                        setUserOpen(false);
-                        showToast(`Switched to ${VENUE} · ${l}`);
-                      }}
-                      className="flex cursor-pointer items-center gap-2.5 rounded-[10px] border-none bg-transparent p-2.5 text-left text-[13px] text-fg hover:bg-fill-soft"
-                    >
-                      <span className={`size-2 rounded-full ${i === location ? 'bg-brand-peach' : 'bg-line-strong'}`} />
-                      {VENUE} · {l}
-                    </button>
-                  ))}
-                  <div className="my-1 h-px bg-surface-muted" />
-                </>
-              )}
               {[
                 ['/settings', 'Account settings', 'text-fg'],
                 ['/help', 'Help & support', 'text-fg'],

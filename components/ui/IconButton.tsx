@@ -15,7 +15,7 @@ export function IconButton({
     <button
       type="button"
       style={{ width: size, height: size }}
-      className={`grid shrink-0 cursor-pointer place-items-center rounded-[12px] border-none bg-fill-soft text-brand-purple hover:bg-fill-hover ${className}`}
+      className={`grid shrink-0 cursor-pointer place-items-center rounded-[12px] border-none bg-fill-soft text-brand-purple hover:bg-fill-hover disabled:cursor-not-allowed disabled:opacity-45 ${className}`}
       {...rest}
     >
       <Icon name={icon} d={d} size={iconSize} stroke={stroke} />

@@ -3,31 +3,34 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useMessages } from '@/components/portal/MessagesProvider';
 import { usePortal } from '@/components/portal/PortalProvider';
 import { Button } from '@/components/ui/Button';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Segmented } from '@/components/ui/Segmented';
-import { IMG, RANGES, SERIES, VENUE, type Range } from '@/lib/portal/data';
+import { IMG, RANGES, SERIES, BUSINESS_NAME, type Range } from '@/lib/portal/data';
 import { firstName } from '@/lib/portal/format';
+import { LOCKED_REASON } from '@/lib/portal/messages';
 import { Chart, ChartLabels, Legend } from './Chart';
 
 export function Dashboard() {
   const router = useRouter();
   const { offers, bookings, checklist, completeChecklist, openOfferForm, setBookingStatus } = usePortal();
+  const { suspended } = useMessages();
   const [range, setRange] = useState<Range>('7d');
   const d = SERIES[range];
 
   const items = [
-    { key: 'profile', label: 'Complete your profile', sub: 'Add a description and opening hours', go: () => router.push('/profile') },
+    { key: 'profile', label: 'Complete your place', sub: 'Add a description and opening hours', go: () => router.push('/branches') },
     {
       key: 'photos',
       label: 'Add photos',
-      sub: 'Venues with 5+ photos get 2× more views',
+      sub: 'Businesses with 5+ photos get 2× more views',
       go: () => {
         completeChecklist('photos');
-        router.push('/profile');
+        router.push('/branches');
       },
     },
     { key: 'offer', label: 'Post your first offer', sub: 'Offers put you in front of people nearby', go: () => openOfferForm() },
@@ -43,7 +46,7 @@ export function Dashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="text-[26px] font-bold text-fg">Good morning, Layla</div>
-          <div className="text-[15px] text-ink-muted">Here&apos;s how {VENUE} is doing · Wednesday, 23 September</div>
+          <div className="text-[15px] text-ink-muted">Here&apos;s how {BUSINESS_NAME} is doing · Wednesday, 23 September</div>
         </div>
         <Segmented options={RANGES} value={range} onChange={setRange} />
       </div>
@@ -63,7 +66,9 @@ export function Dashboard() {
                   key={c.key}
                   type="button"
                   onClick={c.go}
-                  className="flex cursor-pointer items-start gap-3 rounded-lg border-none bg-page p-3.5 text-left hover:bg-fill-row"
+                  disabled={suspended && c.key === 'offer'}
+                  title={suspended && c.key === 'offer' ? LOCKED_REASON : undefined}
+                  className="flex cursor-pointer items-start gap-3 rounded-lg border-none bg-page p-3.5 text-left hover:bg-fill-row disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   {isDone ? (
                     <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand-teal text-inverse">
